@@ -1,0 +1,13 @@
+{
+  "name": "udhaar",
+  "version": "1.0.0",
+  "description": "Udhaar V1 - QR-First Digital Credit Ledger for Local Businesses",
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build"
+  },
+  "keywords": ["udhaar", "kirana", "credit-ledger", "qr"],
+  "author": "",
+  "license": "ISC"
+}

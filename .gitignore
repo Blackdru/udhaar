@@ -1,0 +1,76 @@
+# ==============================================================================
+# Udhaar Root .gitignore
+# ==============================================================================
+
+# Mobile App (Flutter Project - ignored as requested)
+mobile_app/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.env
+*.pem
+*.key
+*.cert
+*.p12
+
+# Node.js & Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build Outputs
+dist/
+build/
+out/
+.cache/
+
+# Local Databases & Storage
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+backend/udhaar.db*
+backend/public/uploads/*
+!backend/public/uploads/.gitkeep
+public/uploads/*
+uploads/
+
+# Logs & Runtime Data
+logs/
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# IDE & Editor Specific
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.classpath
+.settings/
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# Temporary files & Scratchpads
+tmp/
+temp/
+scratch/
+.tempmediaStorage/
