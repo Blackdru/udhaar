@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Edit2, Ban, ShieldCheck, Clock, Receipt, History } from 'lucide-react';
+import { X, Edit2, Ban, ShieldCheck, Clock, Receipt, History, ExternalLink } from 'lucide-react';
+import { getReceiptUrl } from '../utils/api';
 
 export default function TransactionModal({ transactionId, token, onClose, onUpdated }) {
   const [data, setData] = useState(null);
@@ -286,15 +287,27 @@ export default function TransactionModal({ transactionId, token, onClose, onUpda
               {/* Attached Bill / Receipt View */}
               {t.receipt_url && (
                 <div style={{ marginBottom: 20 }}>
-                  <h4 style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Receipt size={16} color="#818cf8" /> Attached Bill Evidence
-                  </h4>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <h4 style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Receipt size={16} color="#818cf8" /> Attached Bill Evidence
+                    </h4>
+                    <a
+                      href={getReceiptUrl(t.receipt_url)}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ fontSize: '0.78rem', color: '#818cf8', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}
+                    >
+                      <ExternalLink size={12} /> Open Full In New Tab
+                    </a>
+                  </div>
                   <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--border-subtle)', background: 'rgba(0,0,0,0.3)', textAlign: 'center' }}>
-                    <img
-                      src={t.receipt_url}
-                      alt="Receipt bill"
-                      style={{ maxWidth: '100%', maxHeight: 320, objectFit: 'contain', display: 'block', margin: '0 auto' }}
-                    />
+                    <a href={getReceiptUrl(t.receipt_url)} target="_blank" rel="noreferrer" title="Click to view full image in new tab">
+                      <img
+                        src={getReceiptUrl(t.receipt_url)}
+                        alt="Receipt bill"
+                        style={{ maxWidth: '100%', maxHeight: 320, objectFit: 'contain', display: 'block', margin: '0 auto', cursor: 'zoom-in' }}
+                      />
+                    </a>
                   </div>
                 </div>
               )}

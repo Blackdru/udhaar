@@ -32,7 +32,7 @@ import AnalyticsView from './components/AnalyticsView';
 import OwnerAuthModal from './components/OwnerAuthModal';
 import HealthCheckView from './components/HealthCheckView';
 import { playStoreChime } from './utils/audio';
-import { getWsUrl } from './utils/api';
+import { getWsUrl, getReceiptUrl } from './utils/api';
 
 export default function App() {
   // Navigation & URL detection
@@ -213,11 +213,17 @@ export default function App() {
   const fetchQrData = async () => {
     if (!token) return;
     try {
-      const res = await fetch('/api/business/me/qr', {
+      const frontendOrigin = window.location.origin?.includes('localhost')
+        ? window.location.origin
+        : 'https://udhaar.store';
+      const res = await fetch(`/api/business/me/qr?frontendUrl=${encodeURIComponent(frontendOrigin)}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
       if (data.success) {
+        if (data.url && data.url.includes('server.udhaar.store')) {
+          data.url = data.url.replace(/https?:\/\/server\.udhaar\.store(:\d+)?/, 'https://udhaar.store');
+        }
         setQrPayload(data);
       }
     } catch (e) {
@@ -703,10 +709,11 @@ export default function App() {
                           <td style={{ padding: '14px 20px' }}>
                             {t.receipt_url ? (
                               <a
-                                href={t.receipt_url}
+                                href={getReceiptUrl(t.receipt_url)}
                                 target="_blank"
                                 rel="noreferrer"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#818cf8', fontSize: '0.78rem', background: 'rgba(99,102,241,0.1)', padding: '4px 8px', borderRadius: 4, textDecoration: 'none' }}
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 <Receipt size={13} /> View Bill
                               </a>

@@ -64,11 +64,49 @@ router.get('/me/qr', authenticateOwner, async (req, res) => {
   }
 
   const biz = req.business;
-  const origin = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:5173';
-  const protocol = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
-  const publicBaseUrl = process.env.PUBLIC_WEB_URL
-    ? process.env.PUBLIC_WEB_URL.replace(/\/+$/, '')
-    : `${protocol}://${origin.split(':')[0]}:5173`;
+  
+  // 1. Check explicitly passed frontend URL parameter
+  let publicBaseUrl = (req.query.frontendUrl || '').trim();
+
+  // 2. Check PUBLIC_WEB_URL from environment
+  if (!publicBaseUrl && process.env.PUBLIC_WEB_URL) {
+    publicBaseUrl = process.env.PUBLIC_WEB_URL.trim();
+  }
+
+  // 3. Check Origin or Referer header sent by the frontend browser
+  if (!publicBaseUrl && req.headers.origin) {
+    publicBaseUrl = req.headers.origin.trim();
+  }
+  if (!publicBaseUrl && req.headers.referer) {
+    try {
+      const parsed = new URL(req.headers.referer);
+      publicBaseUrl = parsed.origin;
+    } catch {
+      // ignore
+    }
+  }
+
+  // 4. Default fallbacks: never attach :5173 to production domains like udhaar.store or server.udhaar.store
+  if (!publicBaseUrl) {
+    const host = req.headers['x-forwarded-host'] || req.headers.host || '';
+    if (host.includes('udhaar.store')) {
+      publicBaseUrl = 'https://udhaar.store';
+    } else {
+      const isHttps = req.secure || req.headers['x-forwarded-proto'] === 'https';
+      const proto = isHttps ? 'https' : 'http';
+      const cleanHost = host.split(':')[0] || 'localhost';
+      publicBaseUrl = `${proto}://${cleanHost}:5173`;
+    }
+  }
+
+  // Ensure clean format without trailing slash
+  publicBaseUrl = publicBaseUrl.replace(/\/+$/, '');
+
+  // Guard: If publicBaseUrl contains server.udhaar.store, rewrite to frontend domain https://udhaar.store
+  if (publicBaseUrl.includes('server.udhaar.store')) {
+    publicBaseUrl = 'https://udhaar.store';
+  }
+
   const clientUrl = `${publicBaseUrl}/b/${biz.qr_token}`;
 
   try {

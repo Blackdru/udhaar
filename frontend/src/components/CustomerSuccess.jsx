@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { CheckCircle2, Share2, Printer, PlusCircle, ArrowLeft, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { getReceiptUrl } from '../utils/api';
 
 export default function CustomerSuccess({ transaction, business, onRecordAnother, onBackToStore }) {
   useEffect(() => {
@@ -130,7 +131,7 @@ export default function CustomerSuccess({ transaction, business, onRecordAnother
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 6, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
               <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Receipt Evidence</span>
               <a
-                href={transaction.receipt_url}
+                href={getReceiptUrl(transaction.receipt_url)}
                 target="_blank"
                 rel="noreferrer"
                 style={{ fontSize: '0.82rem', color: '#818cf8', textDecoration: 'underline', fontWeight: 600 }}

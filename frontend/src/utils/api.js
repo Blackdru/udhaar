@@ -24,6 +24,18 @@ export function getWsUrl() {
   return `${protocol}//${window.location.hostname}:5000`;
 }
 
+export function getReceiptUrl(url) {
+  if (!url) return '';
+  // If already absolute URL (e.g. Supabase Storage public URL: https://...), return as-is
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  // If relative path starting with /uploads, route to backend server domain
+  const cleanPath = url.startsWith('/') ? url : `/${url}`;
+  const base = API_BASE_URL || (typeof window !== 'undefined' && window.location.hostname.includes('udhaar.store') ? 'https://server.udhaar.store' : '');
+  return base ? `${base}${cleanPath}` : cleanPath;
+}
+
 // Automatically ensure window.fetch routes relative /api and /uploads calls to API_BASE_URL in production
 if (typeof window !== 'undefined' && API_BASE_URL) {
   const originalFetch = window.fetch.bind(window);

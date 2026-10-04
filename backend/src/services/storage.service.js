@@ -31,24 +31,29 @@ class StorageService {
             upsert: false
           });
 
-        // Clean up temp file on local disk
-        try { fs.unlinkSync(file.path); } catch (_) {}
-
         if (error) {
           console.error('[STORAGE] Supabase upload failed, falling back to local file:', error.message);
-          return `/uploads/receipts/${file.filename}`;
+          return StorageService.getLocalUrl(file.filename);
         }
+
+        // Successfully uploaded to Supabase Storage -> clean up temp file on local disk
+        try { fs.unlinkSync(file.path); } catch (_) {}
 
         const { data: publicUrlData } = client.storage.from(bucketName).getPublicUrl(filename);
         return publicUrlData.publicUrl;
       } catch (err) {
         console.error('[STORAGE] Error in Supabase storage handler:', err.message);
-        return `/uploads/receipts/${file.filename}`;
+        return StorageService.getLocalUrl(file.filename);
       }
     }
 
     // 2. Local File System Mode
-    return `/uploads/receipts/${file.filename}`;
+    return StorageService.getLocalUrl(file.filename);
+  }
+
+  static getLocalUrl(filename) {
+    const backendBase = (process.env.BACKEND_URL || process.env.API_BASE_URL || 'https://server.udhaar.store').replace(/\/+$/, '');
+    return `${backendBase}/uploads/receipts/${filename}`;
   }
 }
 

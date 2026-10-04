@@ -82,9 +82,13 @@ app.use('/api', globalLimiter);
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
-// Serve uploaded receipts statically
+// Serve uploaded receipts statically with permissive cross-origin access
 const uploadsDir = path.resolve(__dirname, '../uploads');
-app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+}, express.static(uploadsDir));
 
 // Mount Routes
 app.use('/api/auth', authRoutes);

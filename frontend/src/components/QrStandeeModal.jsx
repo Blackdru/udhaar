@@ -1,8 +1,22 @@
-import React, { useRef } from 'react';
-import { X, Download, Printer, ExternalLink, QrCode, Sparkles } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { X, Download, Printer, ExternalLink, QrCode, Sparkles, Copy, Check } from 'lucide-react';
 
 export default function QrStandeeModal({ business, qrData, onClose, onOpenSimulator }) {
   const standeeRef = useRef(null);
+  const [copied, setCopied] = useState(false);
+
+  const frontendBase = window.location.origin?.includes('localhost')
+    ? window.location.origin
+    : 'https://udhaar.store';
+  const customerUrl = qrData?.url
+    ? qrData.url.replace(/https?:\/\/server\.udhaar\.store(:\d+)?/, 'https://udhaar.store')
+    : `${frontendBase}/b/${business?.qr_token}`;
+
+  const copyCustomerLink = () => {
+    navigator.clipboard.writeText(customerUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const downloadQRImage = () => {
     if (!qrData?.qrDataUrl) return;
@@ -68,17 +82,21 @@ export default function QrStandeeModal({ business, qrData, onClose, onOpenSimula
 
       ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
 
-      // Token ID
+      // Token ID & Web URL
       ctx.fillStyle = '#0f172a';
       ctx.font = 'bold 30px monospace';
-      ctx.fillText(`ID: ${business?.qr_token || ''}`, width / 2, 785);
+      ctx.fillText(`ID: ${business?.qr_token || ''}`, width / 2, 770);
+
+      ctx.fillStyle = '#6366f1';
+      ctx.font = 'bold 22px monospace';
+      ctx.fillText(customerUrl, width / 2, 805);
 
       // Divider line
       ctx.strokeStyle = '#e2e8f0';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(80, 825);
-      ctx.lineTo(width - 80, 825);
+      ctx.moveTo(80, 835);
+      ctx.lineTo(width - 80, 835);
       ctx.stroke();
 
       // Bottom instructions
@@ -224,9 +242,32 @@ export default function QrStandeeModal({ business, qrData, onClose, onOpenSimula
             )}
           </div>
 
-          <p style={{ fontSize: '0.8rem', color: '#4338ca', fontWeight: 700, marginTop: 12, fontFamily: 'monospace' }}>
-            ID: {business?.qr_token}
-          </p>
+          <div style={{ marginTop: 12 }}>
+            <p style={{ fontSize: '0.8rem', color: '#4338ca', fontWeight: 700, fontFamily: 'monospace' }}>
+              ID: {business?.qr_token}
+            </p>
+            <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              <span style={{ fontSize: '0.74rem', color: '#64748b', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                {customerUrl}
+              </span>
+              <button
+                type="button"
+                onClick={copyCustomerLink}
+                title="Copy Customer QR Link"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: copied ? '#10b981' : '#6366f1',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: 2
+                }}
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+              </button>
+            </div>
+          </div>
 
           {/* Bottom Standee instructions */}
           <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px dashed #cbd5e1' }}>

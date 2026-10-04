@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Phone, FileText, Ban, CheckCircle, Clock } from 'lucide-react';
+import { getReceiptUrl } from '../utils/api';
 
 export default function CustomerLedgerModal({ customerId, token, onClose, onTransactionUpdated }) {
   const [data, setData] = useState(null);
@@ -196,7 +197,7 @@ export default function CustomerLedgerModal({ customerId, token, onClose, onTran
 
                           {t.receipt_url && (
                             <a
-                              href={t.receipt_url}
+                              href={getReceiptUrl(t.receipt_url)}
                               target="_blank"
                               rel="noreferrer"
                               style={{ color: '#818cf8', textDecoration: 'underline' }}
