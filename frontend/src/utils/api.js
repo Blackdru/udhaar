@@ -23,3 +23,16 @@ export function getWsUrl() {
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   return `${protocol}//${window.location.hostname}:5000`;
 }
+
+// Automatically ensure window.fetch routes relative /api and /uploads calls to API_BASE_URL in production
+if (typeof window !== 'undefined' && API_BASE_URL) {
+  const originalFetch = window.fetch.bind(window);
+  window.fetch = function (resource, init) {
+    if (typeof resource === 'string') {
+      if (resource.startsWith('/api') || resource.startsWith('/uploads')) {
+        return originalFetch(`${API_BASE_URL}${resource}`, init);
+      }
+    }
+    return originalFetch(resource, init);
+  };
+}

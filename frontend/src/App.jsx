@@ -19,7 +19,8 @@ import {
   ArrowUpRight,
   ShieldCheck,
   Bell,
-  RefreshCw
+  RefreshCw,
+  Activity
 } from 'lucide-react';
 
 import CustomerScanFlow from './components/CustomerScanFlow';
@@ -29,7 +30,9 @@ import CustomerLedgerModal from './components/CustomerLedgerModal';
 import TransactionModal from './components/TransactionModal';
 import AnalyticsView from './components/AnalyticsView';
 import OwnerAuthModal from './components/OwnerAuthModal';
+import HealthCheckView from './components/HealthCheckView';
 import { playStoreChime } from './utils/audio';
+import { getWsUrl } from './utils/api';
 
 export default function App() {
   // Navigation & URL detection
@@ -103,8 +106,7 @@ export default function App() {
   useEffect(() => {
     if (!business?.id) return;
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.hostname}:5000`;
+    const wsUrl = getWsUrl();
 
     try {
       const ws = new WebSocket(wsUrl);
@@ -241,6 +243,18 @@ export default function App() {
     localStorage.removeItem('udhaar_business');
   };
 
+  // Health Check diagnostics route e.g. /health
+  if (currentPath === '/health' || currentPath === '/health/') {
+    return (
+      <HealthCheckView
+        onBack={() => {
+          window.history.pushState({}, '', '/');
+          setCurrentPath('/');
+        }}
+      />
+    );
+  }
+
   // Direct QR token scan route e.g. /b/7XK92P
   const qrMatch = currentPath.match(/^\/b\/([a-zA-Z0-9_-]+)/);
   const scannedQrToken = qrMatch ? qrMatch[1] : null;
@@ -365,6 +379,21 @@ export default function App() {
               title={soundEnabled ? 'Sound alert enabled (Click to mute)' : 'Sound muted (Click to enable)'}
             >
               {soundEnabled ? <Volume2 size={16} color="#10b981" /> : <VolumeX size={16} color="var(--text-dim)" />}
+            </button>
+
+            {/* Health Check */}
+            <button
+              id="btn-nav-health"
+              className="btn-secondary"
+              onClick={() => {
+                window.history.pushState({}, '', '/health');
+                setCurrentPath('/health');
+              }}
+              style={{ padding: '8px 12px', fontSize: '0.85rem' }}
+              title="System Diagnostics & Health Check (/health)"
+            >
+              <Activity size={15} color="#10b981" />
+              <span className="hide-mobile">Health</span>
             </button>
 
             {/* Logout */}

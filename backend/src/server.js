@@ -35,6 +35,40 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Health check handler (supports both /health and /api/health)
+const healthHandler = async (req, res) => {
+  let dbStatus = 'connected';
+  try {
+    if (dbRepo.isSupabase && dbRepo.supabaseClient) {
+      const { error } = await dbRepo.supabaseClient.from('businesses').select('id').limit(1);
+      if (error) dbStatus = 'error: ' + error.message;
+    } else if (dbRepo.sqliteDb) {
+      dbRepo.sqliteDb.prepare('SELECT 1').get();
+    }
+  } catch (err) {
+    dbStatus = 'disconnected: ' + (err.message || 'unknown error');
+  }
+
+  const isHealthy = !dbStatus.startsWith('error') && !dbStatus.startsWith('disconnected');
+
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'healthy' : 'degraded',
+    service: 'Udhaar V1 API Engine',
+    uptime: Math.floor(process.uptime()),
+    database: {
+      mode: dbRepo.isSupabase ? 'Supabase PostgreSQL' : 'Local SQLite',
+      status: dbStatus
+    },
+    storageMode: dbRepo.isSupabase ? 'Supabase Storage' : 'Local Disk',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
+};
+
+// Health checks: root /health and /api/health (mounted before rate limiter to prevent probe throttling)
+app.get('/health', healthHandler);
+app.get('/api/health', healthHandler);
+
 // Global API Rate Limiter
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -51,18 +85,6 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 // Serve uploaded receipts statically
 const uploadsDir = path.resolve(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsDir));
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    service: 'Udhaar V1 API Engine',
-    databaseMode: dbRepo.isSupabase ? 'Supabase PostgreSQL' : 'Local SQLite',
-    storageMode: dbRepo.isSupabase ? 'Supabase Storage' : 'Local Disk',
-    timestamp: new Date().toISOString(),
-    version: '1.0.0'
-  });
-});
 
 // Mount Routes
 app.use('/api/auth', authRoutes);

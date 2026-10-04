@@ -275,6 +275,31 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
             </div>
           </form>
         )}
+
+        <div style={{ marginTop: 24, textAlign: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: 16 }}>
+          <a
+            href="/health"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, '', '/health');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            style={{
+              color: 'var(--text-dim)',
+              fontSize: '0.78rem',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#10b981'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-dim)'}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
+            System Status & Health Diagnostics (/health)
+          </a>
+        </div>
       </div>
     </div>
   );
