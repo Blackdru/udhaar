@@ -1,28 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Store,
-  QrCode,
-  Users,
-  CreditCard,
-  TrendingUp,
-  BarChart3,
-  Search,
-  Filter,
-  Volume2,
-  VolumeX,
-  LogOut,
-  Sparkles,
-  ExternalLink,
-  Ban,
-  Receipt,
-  Clock,
-  ArrowUpRight,
-  ShieldCheck,
-  Bell,
-  RefreshCw,
-  Activity
-} from 'lucide-react';
-
 import CustomerScanFlow from './components/CustomerScanFlow';
 import CustomerSuccess from './components/CustomerSuccess';
 import QrStandeeModal from './components/QrStandeeModal';
@@ -50,7 +26,7 @@ export default function App() {
   });
 
   // Active dashboard tab
-  const [activeTab, setActiveTab] = useState('transactions'); // 'transactions' | 'customers' | 'standee' | 'analytics'
+  const [activeTab, setActiveTab] = useState('transactions'); // 'transactions' | 'customers' | 'analytics'
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Transactions list state
@@ -96,8 +72,6 @@ export default function App() {
         fetchTransactions();
       } else if (activeTab === 'customers') {
         fetchCustomers();
-      } else if (activeTab === 'standee') {
-        fetchQrData();
       }
     }
   }, [token, business, activeTab, searchTerm, statusFilter, customerSearch]);
@@ -120,19 +94,16 @@ export default function App() {
         try {
           const msg = JSON.parse(event.data);
           if (msg.type === 'NEW_TRANSACTION') {
-            // Play Audio alert
             if (soundEnabled) {
               playStoreChime();
             }
 
-            // Display Toast
             setRealtimeToast({
-              title: '🔔 New Udhaar Recorded!',
+              title: 'New Udhaar Entry',
               message: `₹${Number(msg.transaction.amount).toLocaleString('en-IN')} by ${msg.transaction.customer_name}`,
               time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
             });
 
-            // Auto-refresh transaction list & customer list
             fetchTransactions();
             if (activeTab === 'customers') fetchCustomers();
           } else if (msg.type === 'TRANSACTION_VOIDED') {
@@ -300,51 +271,56 @@ export default function App() {
 
   // 3. Shopkeeper Dashboard
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-page)' }}>
       {/* Top Header Navbar */}
       <header
         style={{
           borderBottom: '1px solid var(--border-subtle)',
-          background: 'rgba(9, 13, 22, 0.85)',
-          backdropFilter: 'blur(16px)',
+          backgroundColor: 'var(--bg-surface)',
           position: 'sticky',
           top: 0,
           zIndex: 100
         }}
       >
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-          {/* Brand & Store info */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ maxWidth: 1140, margin: '0 auto', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          {/* Store Info */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
             <div
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: 12,
-                background: 'var(--primary-gradient)',
+                width: 38,
+                height: 38,
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'var(--primary)',
+                color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.35)'
+                fontWeight: 800,
+                fontSize: '1.15rem',
+                fontFamily: 'var(--font-heading)',
+                flexShrink: 0
               }}
             >
-              <Store size={22} color="#ffffff" />
+              उ
             </div>
-            <div>
+            <div style={{ minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <h1 style={{ fontSize: '1.15rem', fontWeight: 800 }}>{business?.name || 'My Store'}</h1>
-                <span style={{ fontSize: '0.7rem', color: '#10b981', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', padding: '1px 6px', borderRadius: 4, fontWeight: 700 }}>
+                <h1 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {business?.name || 'My Store'}
+                </h1>
+                <span className="badge-active" style={{ fontSize: '0.66rem', padding: '1px 6px' }}>
                   LIVE
                 </span>
               </div>
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                {business?.category || 'Kirana'} • QR: <span style={{ fontFamily: 'monospace', color: '#818cf8', fontWeight: 700 }}>{business?.qr_token}</span>
+              <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {business?.category || 'Kirana'} • ID: <span style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--text-main)' }}>{business?.qr_token}</span>
               </p>
             </div>
           </div>
 
           {/* Header Action Tools */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Quick Standee Generator Button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            {/* Quick Standee Button */}
             <button
               id="btn-nav-standee"
               className="btn-primary"
@@ -352,24 +328,22 @@ export default function App() {
                 fetchQrData();
                 setShowStandeeModal(true);
               }}
-              style={{ padding: '8px 14px', fontSize: '0.85rem' }}
+              style={{ padding: '7px 12px', fontSize: '0.82rem' }}
             >
-              <QrCode size={16} />
-              <span className="hide-mobile">Counter QR Standee</span>
+              <span>QR Standee</span>
             </button>
 
-            {/* Test Customer View in New Tab */}
+            {/* Test Customer View */}
             <button
               id="btn-test-customer-flow"
               className="btn-secondary"
               onClick={() => {
                 window.open(`/b/${business?.qr_token}`, '_blank');
               }}
-              style={{ padding: '8px 12px', fontSize: '0.85rem' }}
+              style={{ padding: '7px 10px', fontSize: '0.82rem' }}
               title="Open customer QR submission page"
             >
-              <ExternalLink size={15} />
-              <span className="hide-mobile">Test Scan</span>
+              <span>Test Scan</span>
             </button>
 
             {/* Audio chime toggle */}
@@ -381,25 +355,24 @@ export default function App() {
                 setSoundEnabled(next);
                 if (next) playStoreChime();
               }}
-              style={{ padding: '8px 12px' }}
-              title={soundEnabled ? 'Sound alert enabled (Click to mute)' : 'Sound muted (Click to enable)'}
+              style={{ padding: '7px 10px', fontSize: '0.8rem' }}
+              title={soundEnabled ? 'Chime alerts ON' : 'Chime alerts MUTED'}
             >
-              {soundEnabled ? <Volume2 size={16} color="#10b981" /> : <VolumeX size={16} color="var(--text-dim)" />}
+              {soundEnabled ? '🔔' : '🔕'}
             </button>
 
-            {/* Health Check */}
+            {/* Health Check link */}
             <button
               id="btn-nav-health"
-              className="btn-secondary"
+              className="btn-secondary desktop-only"
               onClick={() => {
                 window.history.pushState({}, '', '/health');
                 setCurrentPath('/health');
               }}
-              style={{ padding: '8px 12px', fontSize: '0.85rem' }}
-              title="System Diagnostics & Health Check (/health)"
+              style={{ padding: '7px 10px', fontSize: '0.82rem' }}
+              title="System Diagnostics"
             >
-              <Activity size={15} color="#10b981" />
-              <span className="hide-mobile">Health</span>
+              Health
             </button>
 
             {/* Logout */}
@@ -407,55 +380,49 @@ export default function App() {
               id="btn-logout"
               className="btn-secondary"
               onClick={handleLogout}
-              style={{ padding: '8px 12px' }}
+              style={{ padding: '7px 10px', fontSize: '0.82rem' }}
               title="Sign Out"
             >
-              <LogOut size={16} />
+              Sign out
             </button>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px', display: 'flex', gap: 8, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 16px', display: 'flex', gap: 4, overflowX: 'auto' }}>
           <button
             id="tab-btn-transactions"
             onClick={() => setActiveTab('transactions')}
             style={{
-              padding: '12px 16px',
+              padding: '10px 14px',
               background: 'none',
               border: 'none',
-              borderBottom: activeTab === 'transactions' ? '2px solid var(--primary)' : '2px solid transparent',
-              color: activeTab === 'transactions' ? '#ffffff' : 'var(--text-muted)',
-              fontWeight: 700,
-              fontSize: '0.9rem',
+              borderBottom: activeTab === 'transactions' ? '2.5px solid var(--primary)' : '2.5px solid transparent',
+              color: activeTab === 'transactions' ? 'var(--text-main)' : 'var(--text-muted)',
+              fontWeight: activeTab === 'transactions' ? 700 : 500,
+              fontSize: '0.88rem',
               cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6
+              whiteSpace: 'nowrap'
             }}
           >
-            <CreditCard size={16} />
-            Dashboard & Ledger
+            Ledger & Entries
           </button>
 
           <button
             id="tab-btn-customers"
             onClick={() => setActiveTab('customers')}
             style={{
-              padding: '12px 16px',
+              padding: '10px 14px',
               background: 'none',
               border: 'none',
-              borderBottom: activeTab === 'customers' ? '2px solid var(--primary)' : '2px solid transparent',
-              color: activeTab === 'customers' ? '#ffffff' : 'var(--text-muted)',
-              fontWeight: 700,
-              fontSize: '0.9rem',
+              borderBottom: activeTab === 'customers' ? '2.5px solid var(--primary)' : '2.5px solid transparent',
+              color: activeTab === 'customers' ? 'var(--text-main)' : 'var(--text-muted)',
+              fontWeight: activeTab === 'customers' ? 700 : 500,
+              fontSize: '0.88rem',
               cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6
+              whiteSpace: 'nowrap'
             }}
           >
-            <Users size={16} />
             Customer Accounts
           </button>
 
@@ -463,20 +430,17 @@ export default function App() {
             id="tab-btn-analytics"
             onClick={() => setActiveTab('analytics')}
             style={{
-              padding: '12px 16px',
+              padding: '10px 14px',
               background: 'none',
               border: 'none',
-              borderBottom: activeTab === 'analytics' ? '2px solid var(--primary)' : '2px solid transparent',
-              color: activeTab === 'analytics' ? '#ffffff' : 'var(--text-muted)',
-              fontWeight: 700,
-              fontSize: '0.9rem',
+              borderBottom: activeTab === 'analytics' ? '2.5px solid var(--primary)' : '2.5px solid transparent',
+              color: activeTab === 'analytics' ? 'var(--text-main)' : 'var(--text-muted)',
+              fontWeight: activeTab === 'analytics' ? 700 : 500,
+              fontSize: '0.88rem',
               cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6
+              whiteSpace: 'nowrap'
             }}
           >
-            <BarChart3 size={16} />
             Analytics & Reports
           </button>
         </div>
@@ -485,124 +449,118 @@ export default function App() {
       {/* Real-time Toast Alert */}
       {realtimeToast && (
         <div
-          className="glass-panel animate-slide-down"
+          className="card-surface animate-fade-in"
           style={{
             position: 'fixed',
-            bottom: 24,
-            right: 24,
+            bottom: 20,
+            right: 20,
             zIndex: 1000,
-            padding: '16px 20px',
-            background: 'rgba(15, 23, 42, 0.95)',
-            border: '1px solid rgba(16, 185, 129, 0.5)',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(16, 185, 129, 0.3)',
+            padding: '14px 18px',
+            borderLeft: '4px solid var(--emerald)',
+            boxShadow: 'var(--shadow-lg)',
             display: 'flex',
             alignItems: 'center',
-            gap: 14,
-            maxWidth: 380
+            gap: 12,
+            maxWidth: 360,
+            width: 'calc(100% - 40px)'
           }}
         >
-          <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Bell size={20} color="#10b981" />
-          </div>
           <div style={{ flex: 1 }}>
-            <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#ffffff' }}>{realtimeToast.title}</h4>
-            <p style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 600 }}>{realtimeToast.message}</p>
+            <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-main)' }}>{realtimeToast.title}</h4>
+            <p style={{ fontSize: '0.82rem', color: 'var(--emerald-text)', fontWeight: 600 }}>{realtimeToast.message}</p>
           </div>
           <button
             onClick={() => setRealtimeToast(null)}
-            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1 }}
           >
-            ✕
+            ×
           </button>
         </div>
       )}
 
       {/* Main Container Content */}
-      <main style={{ maxWidth: 1200, width: '100%', margin: '0 auto', padding: '24px 20px 60px', flex: 1 }}>
+      <main style={{ maxWidth: 1140, width: '100%', margin: '0 auto', padding: '20px 16px 60px', flex: 1 }}>
         {/* TAB 1: TRANSACTIONS DASHBOARD */}
         {activeTab === 'transactions' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }} className="animate-fade-in">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }} className="animate-fade-in">
             {/* KPI Cards Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
-              <div className="glass-panel" style={{ padding: '20px', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'var(--primary-gradient)' }} />
-                <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.04em' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
+              <div className="card-surface" style={{ padding: '18px 20px' }}>
+                <span style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.04em' }}>
                   Total Outstanding Udhaar
                 </span>
-                <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#ffffff', marginTop: 4, fontFamily: 'var(--font-heading)' }}>
+                <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-main)', marginTop: 4, fontFamily: 'var(--font-heading)' }}>
                   ₹{Number(totalOutstanding).toLocaleString('en-IN')}
                 </div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-                  Current uncollected customer credit
+                <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                  Uncollected customer credit
                 </span>
               </div>
 
-              <div className="glass-panel" style={{ padding: '20px' }}>
-                <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.04em' }}>
-                  Total Recorded Records
+              <div className="card-surface" style={{ padding: '18px 20px' }}>
+                <span style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.04em' }}>
+                  Total Ledger Records
                 </span>
-                <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#818cf8', marginTop: 4, fontFamily: 'var(--font-heading)' }}>
+                <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-main)', marginTop: 4, fontFamily: 'var(--font-heading)' }}>
                   {transactions.length}
                 </div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-                  Transactions in active ledger
+                <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                  All time entries in register
                 </span>
               </div>
 
               {/* Standee Callout Card */}
               <div
-                className="glass-panel glass-panel-interactive"
+                className="card-surface card-interactive"
                 onClick={() => {
                   fetchQrData();
                   setShowStandeeModal(true);
                 }}
-                style={{ padding: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                style={{ padding: '18px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
               >
                 <div>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(99,102,241,0.15)', color: '#818cf8', padding: '2px 8px', borderRadius: 4, fontSize: '0.7rem', fontWeight: 700, marginBottom: 4 }}>
-                    <Sparkles size={12} /> SHOP STANDEE
-                  </div>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 800 }}>Display Your QR</h3>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Print counter acrylic card</p>
+                  <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--emerald-text)', fontWeight: 700, letterSpacing: '0.04em' }}>
+                    Store Counter Standee
+                  </span>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', marginTop: 2 }}>
+                    Display & Print QR
+                  </h3>
+                  <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>Generate counter acrylic card</p>
                 </div>
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(99, 102, 241, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <QrCode size={24} color="#818cf8" />
-                </div>
+                <span style={{ fontSize: '1.4rem' }}>🖨️</span>
               </div>
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ position: 'relative', flex: 1, minWidth: 260 }}>
-                <Search size={18} color="var(--text-dim)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+            <div className="card-surface" style={{ padding: '14px 16px', display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ flex: 1, minWidth: 220 }}>
                 <input
                   id="input-search-txns"
                   type="text"
-                  placeholder="Search customer name, mobile, or transaction ID..."
+                  placeholder="Search customer, mobile, or txn ID..."
                   className="input-field"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{ paddingLeft: 42 }}
+                  style={{ padding: '9px 12px', fontSize: '0.9rem' }}
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>Status:</span>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
                 {['ALL', 'ACTIVE', 'VOIDED'].map((st) => (
                   <button
                     key={st}
                     id={`btn-filter-${st.toLowerCase()}`}
                     onClick={() => setStatusFilter(st)}
                     style={{
-                      background: statusFilter === st ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.03)',
+                      background: statusFilter === st ? 'var(--primary)' : 'var(--bg-subtle)',
                       borderColor: statusFilter === st ? 'var(--primary)' : 'var(--border-subtle)',
                       borderWidth: 1,
                       borderStyle: 'solid',
-                      color: statusFilter === st ? '#818cf8' : 'var(--text-muted)',
-                      padding: '8px 14px',
+                      color: statusFilter === st ? '#ffffff' : 'var(--text-secondary)',
+                      padding: '7px 12px',
                       borderRadius: 'var(--radius-md)',
-                      fontSize: '0.82rem',
-                      fontWeight: 700,
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
                       cursor: 'pointer'
                     }}
                   >
@@ -614,188 +572,268 @@ export default function App() {
                   id="btn-refresh-txns"
                   className="btn-secondary"
                   onClick={fetchTransactions}
-                  style={{ padding: '8px 12px' }}
+                  style={{ padding: '7px 12px', fontSize: '0.8rem' }}
                   title="Refresh ledger"
                 >
-                  <RefreshCw size={15} />
+                  Refresh
                 </button>
               </div>
             </div>
 
-            {/* Transactions Table */}
-            <div className="glass-panel" style={{ overflow: 'hidden' }}>
+            {/* Transactions Section: Responsive Desktop Table & Mobile Cards */}
+            <div className="card-surface" style={{ overflow: 'hidden' }}>
               {loadingTxns ? (
-                <div style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>Loading transactions...</div>
+                <div style={{ textAlign: 'center', padding: 50, color: 'var(--text-muted)' }}>Loading transactions...</div>
               ) : transactions.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: 60 }}>
-                  <CreditCard size={48} color="var(--text-dim)" style={{ margin: '0 auto 16px' }} />
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>No transactions found</h3>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: 4 }}>
+                <div style={{ textAlign: 'center', padding: 50 }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>No transactions found</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.84rem', marginTop: 4 }}>
                     Scan your shop QR or simulate customer submission to record credit.
                   </p>
                 </div>
               ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
-                    <thead>
-                      <tr style={{ borderBottom: '1px solid var(--border-subtle)', background: 'rgba(255, 255, 255, 0.02)', color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '0.72rem', letterSpacing: '0.05em' }}>
-                        <th style={{ padding: '14px 20px' }}>Date & Time</th>
-                        <th style={{ padding: '14px 20px' }}>Customer</th>
-                        <th style={{ padding: '14px 20px' }}>Transaction ID</th>
-                        <th style={{ padding: '14px 20px' }}>Amount</th>
-                        <th style={{ padding: '14px 20px' }}>Evidence</th>
-                        <th style={{ padding: '14px 20px' }}>Status</th>
-                        <th style={{ padding: '14px 20px', textAlign: 'right' }}>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {transactions.map((t) => (
-                        <tr
-                          key={t.id}
-                          style={{
-                            borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                            transition: 'background 0.15s ease',
-                            opacity: t.status === 'VOIDED' ? 0.65 : 1
-                          }}
-                          onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)')}
-                          onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
-                        >
-                          <td style={{ padding: '14px 20px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                            {new Date(t.created_at).toLocaleDateString('en-IN', {
-                              day: '2-digit',
-                              month: 'short',
-                              year: 'numeric'
-                            })}
-                            <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
-                              {new Date(t.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                            </div>
-                          </td>
+                <>
+                  {/* Desktop Table View */}
+                  <div className="desktop-only" style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-subtle)', color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '0.72rem', letterSpacing: '0.05em' }}>
+                          <th style={{ padding: '12px 18px' }}>Date & Time</th>
+                          <th style={{ padding: '12px 18px' }}>Customer</th>
+                          <th style={{ padding: '12px 18px' }}>Transaction ID</th>
+                          <th style={{ padding: '12px 18px' }}>Amount</th>
+                          <th style={{ padding: '12px 18px' }}>Bill</th>
+                          <th style={{ padding: '12px 18px' }}>Status</th>
+                          <th style={{ padding: '12px 18px', textAlign: 'right' }}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {transactions.map((t) => (
+                          <tr
+                            key={t.id}
+                            style={{
+                              borderBottom: '1px solid var(--border-subtle)',
+                              transition: 'background 0.12s ease',
+                              opacity: t.status === 'VOIDED' ? 0.6 : 1
+                            }}
+                            onMouseOver={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
+                            onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+                          >
+                            <td style={{ padding: '12px 18px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                              {new Date(t.created_at).toLocaleDateString('en-IN', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                                {new Date(t.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                              </div>
+                            </td>
 
-                          <td style={{ padding: '14px 20px' }}>
+                            <td style={{ padding: '12px 18px' }}>
+                              <div
+                                onClick={() => setSelectedCustomerId(t.customer_id)}
+                                style={{ fontWeight: 700, color: 'var(--text-main)', cursor: 'pointer', textDecoration: 'underline' }}
+                              >
+                                {t.customer_name}
+                              </div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                +91 {t.customer_mobile}
+                              </div>
+                              {t.notes && (
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic', marginTop: 2 }}>
+                                  {t.notes}
+                                </div>
+                              )}
+                            </td>
+
+                            <td style={{ padding: '12px 18px', fontFamily: 'monospace', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                              {t.transaction_number}
+                            </td>
+
+                            <td style={{ padding: '12px 18px' }}>
+                              <div
+                                style={{
+                                  fontSize: '1.05rem',
+                                  fontWeight: 800,
+                                  fontFamily: 'var(--font-heading)',
+                                  color: t.status === 'ACTIVE' ? 'var(--text-main)' : 'var(--text-dim)',
+                                  textDecoration: t.status === 'VOIDED' ? 'line-through' : 'none'
+                                }}
+                              >
+                                ₹{Number(t.amount).toLocaleString('en-IN')}
+                              </div>
+                            </td>
+
+                            <td style={{ padding: '12px 18px' }}>
+                              {t.receipt_url ? (
+                                <a
+                                  href={getReceiptUrl(t.receipt_url)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  style={{ color: 'var(--text-main)', fontSize: '0.78rem', textDecoration: 'underline', fontWeight: 600 }}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  View Bill
+                                </a>
+                              ) : (
+                                <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>—</span>
+                              )}
+                            </td>
+
+                            <td style={{ padding: '12px 18px' }}>
+                              {t.status === 'ACTIVE' ? (
+                                <span className="badge-active">ACTIVE</span>
+                              ) : (
+                                <span className="badge-voided" title={t.void_reason || 'Voided'}>VOIDED</span>
+                              )}
+                            </td>
+
+                            <td style={{ padding: '12px 18px', textAlign: 'right' }}>
+                              <button
+                                id={`btn-open-txn-${t.id}`}
+                                onClick={() => setSelectedTxnId(t.id)}
+                                className="btn-secondary"
+                                style={{ padding: '5px 10px', fontSize: '0.78rem' }}
+                              >
+                                Details
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Cards List View */}
+                  <div className="mobile-only" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                    {transactions.map((t, idx) => (
+                      <div
+                        key={t.id}
+                        style={{
+                          padding: '14px 16px',
+                          borderBottom: idx < transactions.length - 1 ? '1px solid var(--border-subtle)' : 'none',
+                          opacity: t.status === 'VOIDED' ? 0.65 : 1
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                          <div>
                             <div
                               onClick={() => setSelectedCustomerId(t.customer_id)}
-                              style={{ fontWeight: 700, color: '#818cf8', cursor: 'pointer', textDecoration: 'underline' }}
+                              style={{ fontWeight: 700, fontSize: '0.96rem', color: 'var(--text-main)', cursor: 'pointer' }}
                             >
                               {t.customer_name}
                             </div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                               +91 {t.customer_mobile}
                             </div>
-                            {t.notes && (
-                              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic', marginTop: 2 }}>
-                                {t.notes}
-                              </div>
-                            )}
-                          </td>
-
-                          <td style={{ padding: '14px 20px', fontFamily: 'monospace', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                            {t.transaction_number}
-                          </td>
-
-                          <td style={{ padding: '14px 20px' }}>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
                             <div
                               style={{
-                                fontSize: '1.1rem',
+                                fontSize: '1.18rem',
                                 fontWeight: 800,
                                 fontFamily: 'var(--font-heading)',
-                                color: t.status === 'ACTIVE' ? '#ffffff' : 'var(--text-dim)',
+                                color: t.status === 'ACTIVE' ? 'var(--text-main)' : 'var(--text-dim)',
                                 textDecoration: t.status === 'VOIDED' ? 'line-through' : 'none'
                               }}
                             >
                               ₹{Number(t.amount).toLocaleString('en-IN')}
                             </div>
-                          </td>
+                            <div style={{ marginTop: 2 }}>
+                              {t.status === 'ACTIVE' ? (
+                                <span className="badge-active">ACTIVE</span>
+                              ) : (
+                                <span className="badge-voided">VOIDED</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
 
-                          <td style={{ padding: '14px 20px' }}>
-                            {t.receipt_url ? (
+                        {t.notes && (
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontStyle: 'italic', marginBottom: 6 }}>
+                            "{t.notes}"
+                          </div>
+                        )}
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border-subtle)', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                          <div>
+                            {new Date(t.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })} • {new Date(t.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+
+                          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            {t.receipt_url && (
                               <a
                                 href={getReceiptUrl(t.receipt_url)}
                                 target="_blank"
                                 rel="noreferrer"
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#818cf8', fontSize: '0.78rem', background: 'rgba(99,102,241,0.1)', padding: '4px 8px', borderRadius: 4, textDecoration: 'none' }}
-                                onClick={(e) => e.stopPropagation()}
+                                style={{ color: 'var(--text-main)', textDecoration: 'underline', fontWeight: 600 }}
                               >
-                                <Receipt size={13} /> View Bill
+                                Bill
                               </a>
-                            ) : (
-                              <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>None</span>
                             )}
-                          </td>
-
-                          <td style={{ padding: '14px 20px' }}>
-                            {t.status === 'ACTIVE' ? (
-                              <span className="badge-active">ACTIVE</span>
-                            ) : (
-                              <span className="badge-voided" title={t.void_reason || 'Voided'}>VOIDED</span>
-                            )}
-                          </td>
-
-                          <td style={{ padding: '14px 20px', textAlign: 'right' }}>
                             <button
-                              id={`btn-open-txn-${t.id}`}
+                              id={`btn-open-txn-mobile-${t.id}`}
                               onClick={() => setSelectedTxnId(t.id)}
                               className="btn-secondary"
-                              style={{ padding: '6px 12px', fontSize: '0.78rem' }}
+                              style={{ padding: '4px 8px', fontSize: '0.74rem' }}
                             >
                               Details
                             </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           </div>
         )}
 
-        {/* TAB 2: CUSTOMER LEDGER */}
+        {/* TAB 2: CUSTOMER ACCOUNTS */}
         {activeTab === 'customers' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} className="animate-fade-in">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} className="animate-fade-in">
             {/* Customer Search */}
-            <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', gap: 12, alignItems: 'center' }}>
-              <div style={{ position: 'relative', flex: 1 }}>
-                <Search size={18} color="var(--text-dim)" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
-                <input
-                  id="input-search-customers"
-                  type="text"
-                  placeholder="Search customer by name or phone number..."
-                  className="input-field"
-                  value={customerSearch}
-                  onChange={(e) => setCustomerSearch(e.target.value)}
-                  style={{ paddingLeft: 42 }}
-                />
-              </div>
+            <div className="card-surface" style={{ padding: '14px 16px' }}>
+              <input
+                id="input-search-customers"
+                type="text"
+                placeholder="Search customer by name or mobile number..."
+                className="input-field"
+                value={customerSearch}
+                onChange={(e) => setCustomerSearch(e.target.value)}
+                style={{ padding: '9px 12px', fontSize: '0.9rem' }}
+              />
             </div>
 
             {/* Customers Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
               {loadingCustomers ? (
                 <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>Loading customer accounts...</div>
               ) : customers.length === 0 ? (
-                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 40, color: 'var(--text-dim)' }}>No customers found.</div>
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>No customers found.</div>
               ) : (
                 customers.map((c) => (
                   <div
                     key={c.id}
-                    className="glass-panel glass-panel-interactive"
+                    className="card-surface card-interactive"
                     onClick={() => setSelectedCustomerId(c.id)}
-                    style={{ padding: '20px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 12 }}
+                    style={{ padding: '18px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
-                        <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>{c.name}</h3>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-main)' }}>{c.name}</h3>
                         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>+91 {c.mobile}</p>
                       </div>
-                      <span style={{ fontSize: '0.72rem', background: 'rgba(255,255,255,0.06)', padding: '2px 8px', borderRadius: 4, color: 'var(--text-muted)' }}>
+                      <span className="badge-neutral">
                         {c.transaction_count} txns
                       </span>
                     </div>
 
-                    <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ marginTop: 'auto', paddingTop: 10, borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Outstanding:</span>
-                      <span style={{ fontSize: '1.25rem', fontWeight: 800, color: Number(c.total_outstanding) > 0 ? '#f8fafc' : '#10b981', fontFamily: 'var(--font-heading)' }}>
+                      <span style={{ fontSize: '1.2rem', fontWeight: 800, color: Number(c.total_outstanding) > 0 ? 'var(--text-main)' : 'var(--emerald-text)', fontFamily: 'var(--font-heading)' }}>
                         ₹{Number(c.total_outstanding).toLocaleString('en-IN')}
                       </span>
                     </div>

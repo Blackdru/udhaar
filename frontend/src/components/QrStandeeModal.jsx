@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import { X, Download, Printer, ExternalLink, QrCode, Sparkles, Copy, Check } from 'lucide-react';
 
 export default function QrStandeeModal({ business, qrData, onClose, onOpenSimulator }) {
   const standeeRef = useRef(null);
@@ -87,7 +86,7 @@ export default function QrStandeeModal({ business, qrData, onClose, onOpenSimula
       ctx.font = 'bold 30px monospace';
       ctx.fillText(`ID: ${business?.qr_token || ''}`, width / 2, 770);
 
-      ctx.fillStyle = '#6366f1';
+      ctx.fillStyle = '#0f172a';
       ctx.font = 'bold 22px monospace';
       ctx.fillText(customerUrl, width / 2, 805);
 
@@ -102,7 +101,7 @@ export default function QrStandeeModal({ business, qrData, onClose, onOpenSimula
       // Bottom instructions
       ctx.fillStyle = '#0f172a';
       ctx.font = 'bold 26px sans-serif';
-      ctx.fillText('Open phone camera or Udhaar app to scan', width / 2, 875);
+      ctx.fillText('Open phone camera or QR scanner', width / 2, 875);
 
       ctx.fillStyle = '#64748b';
       ctx.font = '22px sans-serif';
@@ -121,226 +120,169 @@ export default function QrStandeeModal({ business, qrData, onClose, onOpenSimula
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        backdropFilter: 'blur(8px)',
-        zIndex: 9999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 16
-      }}
-      className="animate-fade-in"
-    >
-      <div
-        className="glass-panel"
-        style={{
-          width: '100%',
-          maxWidth: 480,
-          maxHeight: '92vh',
-          overflowY: 'auto',
-          padding: '24px',
-          position: 'relative',
-          border: '1px solid rgba(99, 102, 241, 0.3)'
-        }}
-      >
-        <button
-          id="btn-close-standee"
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: 'none',
-            color: 'var(--text-muted)',
-            width: 36,
-            height: 36,
-            borderRadius: '50%',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <X size={20} />
-        </button>
-
-        <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 800 }}>Store QR Standee</h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            Place this counter standee at your shop counter for customers to scan
-          </p>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
+        {/* Header */}
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-surface)' }}>
+          <div>
+            <h2 style={{ fontSize: '1.18rem', fontWeight: 800, color: 'var(--text-main)' }}>Counter QR Standee</h2>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Display at your checkout counter</p>
+          </div>
+          <button
+            id="btn-close-standee"
+            onClick={onClose}
+            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.4rem', lineHeight: 1, padding: 6 }}
+            aria-label="Close"
+          >
+            ×
+          </button>
         </div>
 
-        {/* The Printable Kirana Standee Card */}
-        <div
-          ref={standeeRef}
-          id="kirana-printable-standee"
-          style={{
-            background: '#ffffff',
-            color: '#0f172a',
-            borderRadius: 20,
-            padding: '28px 24px',
-            textAlign: 'center',
-            boxShadow: '0 15px 35px rgba(0, 0, 0, 0.3)',
-            border: '4px solid #4338ca',
-            position: 'relative'
-          }}
-        >
-          {/* Header Badge */}
+        {/* Content */}
+        <div style={{ padding: '20px', overflowY: 'auto', flex: 1, backgroundColor: 'var(--bg-page)' }}>
+          {/* Printable Kirana Standee Card */}
           <div
-            style={{
-              background: '#4338ca',
-              color: '#ffffff',
-              padding: '6px 18px',
-              borderRadius: 9999,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              fontWeight: 800,
-              fontSize: '0.88rem',
-              letterSpacing: '0.06em',
-              marginBottom: 14
-            }}
-          >
-            <Sparkles size={14} />
-            UDHAAR
-          </div>
-
-          <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1e1b4b', marginBottom: 4 }}>
-            {business?.name || 'Kirana Store'}
-          </h3>
-          <p style={{ fontSize: '0.85rem', color: '#6b7280', fontWeight: 600, marginBottom: 16 }}>
-            Scan to record customer credit (udhaar)
-          </p>
-
-          {/* QR Code Container */}
-          <div
+            ref={standeeRef}
+            id="kirana-printable-standee"
             style={{
               background: '#ffffff',
-              padding: 12,
+              color: '#0f172a',
               borderRadius: 16,
-              display: 'inline-block',
-              border: '2px solid #e2e8f0',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+              padding: '24px 20px',
+              textAlign: 'center',
+              boxShadow: 'var(--shadow-sm)',
+              border: '2px solid #0f172a',
+              position: 'relative'
             }}
           >
-            {qrData?.qrDataUrl ? (
-              <img
-                src={qrData.qrDataUrl}
-                alt="Business Udhaar QR"
-                style={{ width: 220, height: 220, display: 'block', borderRadius: 8 }}
-              />
-            ) : (
-              <div style={{ width: 220, height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <QrCode size={64} color="#94a3b8" />
-              </div>
-            )}
-          </div>
+            {/* Header Badge */}
+            <div
+              style={{
+                background: '#0f172a',
+                color: '#ffffff',
+                padding: '5px 16px',
+                borderRadius: 'var(--radius-full)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                fontWeight: 800,
+                fontSize: '0.84rem',
+                letterSpacing: '0.06em',
+                marginBottom: 12
+              }}
+            >
+              UDHAAR
+            </div>
 
-          <div style={{ marginTop: 12 }}>
-            <p style={{ fontSize: '0.8rem', color: '#4338ca', fontWeight: 700, fontFamily: 'monospace' }}>
-              ID: {business?.qr_token}
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', marginBottom: 2 }}>
+              {business?.name || 'Kirana Store'}
+            </h3>
+            <p style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 500, marginBottom: 14 }}>
+              Scan to record customer credit (udhaar)
             </p>
-            <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              <span style={{ fontSize: '0.74rem', color: '#64748b', fontFamily: 'monospace', wordBreak: 'break-all' }}>
-                {customerUrl}
-              </span>
-              <button
-                type="button"
-                onClick={copyCustomerLink}
-                title="Copy Customer QR Link"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: copied ? '#10b981' : '#6366f1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: 2
-                }}
-              >
-                {copied ? <Check size={14} /> : <Copy size={14} />}
-              </button>
+
+            {/* QR Code Container */}
+            <div
+              style={{
+                background: '#ffffff',
+                padding: 10,
+                borderRadius: 12,
+                display: 'inline-block',
+                border: '1px solid #cbd5e1'
+              }}
+            >
+              {qrData?.qrDataUrl ? (
+                <img
+                  src={qrData.qrDataUrl}
+                  alt="Business Udhaar QR"
+                  style={{ width: 190, height: 190, display: 'block', borderRadius: 6 }}
+                />
+              ) : (
+                <div style={{ width: 190, height: 190, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+                  Loading QR...
+                </div>
+              )}
+            </div>
+
+            <div style={{ marginTop: 10 }}>
+              <p style={{ fontSize: '0.78rem', color: '#0f172a', fontWeight: 700, fontFamily: 'monospace' }}>
+                ID: {business?.qr_token}
+              </p>
+              <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                  {customerUrl}
+                </span>
+                <button
+                  type="button"
+                  onClick={copyCustomerLink}
+                  style={{
+                    background: 'var(--bg-subtle)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: 'var(--radius-xs)',
+                    padding: '2px 6px',
+                    fontSize: '0.72rem',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    color: copied ? 'var(--emerald-text)' : 'var(--text-secondary)'
+                  }}
+                >
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            {/* Bottom Standee instructions */}
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px dashed #cbd5e1' }}>
+              <p style={{ fontSize: '0.76rem', color: '#334155', fontWeight: 600 }}>
+                Open phone camera or QR scanner
+              </p>
+              <p style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: 2 }}>
+                Instant browser entry • Zero app install
+              </p>
             </div>
           </div>
 
-          {/* Bottom Standee instructions */}
-          <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px dashed #cbd5e1' }}>
-            <p style={{ fontSize: '0.78rem', color: '#475569', fontWeight: 600 }}>
-              📸 Open your phone camera or QR scanner
-            </p>
-            <p style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: 2 }}>
-              Zero app install needed • Enter amount & submit
-            </p>
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 18 }}>
+            <button
+              id="btn-print-standee"
+              onClick={handlePrintStandee}
+              className="btn-primary"
+              style={{ width: '100%' }}
+            >
+              Print / Save PDF Standee
+            </button>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <button
+                id="btn-download-standee-img"
+                onClick={downloadStandeeImage}
+                className="btn-secondary"
+              >
+                Standee PNG
+              </button>
+
+              <button
+                id="btn-download-qr"
+                onClick={downloadQRImage}
+                className="btn-secondary"
+              >
+                QR Image
+              </button>
+            </div>
+
+            <button
+              id="btn-test-customer-scan"
+              onClick={() => {
+                onClose();
+                if (onOpenSimulator) onOpenSimulator(business?.qr_token);
+              }}
+              className="btn-secondary"
+              style={{ width: '100%', marginTop: 4 }}
+            >
+              Test Scan in New Tab
+            </button>
           </div>
         </div>
-
-        {/* Actions Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, marginTop: 20 }}>
-          <button
-            id="btn-print-standee"
-            onClick={handlePrintStandee}
-            className="btn-primary"
-            style={{ padding: '12px 14px', fontSize: '0.92rem' }}
-          >
-            <Printer size={16} />
-            Print / Save as PDF
-          </button>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 10 }}>
-          <button
-            id="btn-download-standee-img"
-            onClick={downloadStandeeImage}
-            className="btn-secondary"
-            style={{ padding: '10px 14px', fontSize: '0.85rem' }}
-          >
-            <Download size={15} />
-            Standee Image (PNG)
-          </button>
-
-          <button
-            id="btn-download-qr"
-            onClick={downloadQRImage}
-            className="btn-secondary"
-            style={{ padding: '10px 14px', fontSize: '0.85rem' }}
-          >
-            <Download size={15} />
-            QR Code Only (PNG)
-          </button>
-        </div>
-
-        <button
-          id="btn-test-customer-scan"
-          onClick={() => {
-            onClose();
-            if (onOpenSimulator) onOpenSimulator(business?.qr_token);
-          }}
-          style={{
-            width: '100%',
-            marginTop: 12,
-            background: 'rgba(99, 102, 241, 0.15)',
-            border: '1px solid rgba(99, 102, 241, 0.4)',
-            color: '#a5b4fc',
-            padding: '10px',
-            borderRadius: 'var(--radius-md)',
-            fontWeight: 600,
-            fontSize: '0.85rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6
-          }}
-        >
-          <ExternalLink size={15} />
-          Simulate Customer Scan Flow
-        </button>
       </div>
     </div>
   );

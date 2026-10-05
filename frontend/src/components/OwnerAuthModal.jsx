@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Store, KeyRound, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export default function OwnerAuthModal({ onLoginSuccess }) {
   const [mobile, setMobile] = useState('');
@@ -31,7 +30,7 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
         setError(data.message || 'Demo login failed.');
       }
     } catch (e) {
-      setError('Connection error.');
+      setError('Connection error. Please ensure the backend is running.');
     } finally {
       setLoading(false);
     }
@@ -101,43 +100,47 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
   return (
     <div
       style={{
-        minHeight: '80vh',
+        minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 16
+        padding: '24px 16px',
+        backgroundColor: 'var(--bg-page)'
       }}
       className="animate-fade-in"
     >
       <div
-        className="glass-panel"
+        className="card-surface"
         style={{
           width: '100%',
-          maxWidth: 440,
-          padding: '32px 24px',
-          border: '1px solid rgba(99, 102, 241, 0.3)',
-          boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)'
+          maxWidth: 420,
+          padding: '32px 28px'
         }}
       >
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div
             style={{
-              width: 56,
-              height: 56,
-              borderRadius: 16,
-              background: 'var(--primary-gradient)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 12,
-              boxShadow: '0 8px 20px rgba(99, 102, 241, 0.4)'
+              width: 48,
+              height: 48,
+              borderRadius: 'var(--radius-md)',
+              background: 'var(--primary)',
+              color: '#ffffff',
+              fontSize: '1.4rem',
+              fontWeight: 800,
+              fontFamily: 'var(--font-heading)',
+              marginBottom: 12
             }}
           >
-            <Store size={28} color="#ffffff" />
+            उ
           </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Udhaar Merchant Portal</h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            Digital Credit Ledger & QR Dashboard for Local Businesses
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: 4 }}>
+            Udhaar Merchant Portal
+          </h1>
+          <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)' }}>
+            Digital Credit Ledger & QR Platform
           </p>
         </div>
 
@@ -149,36 +152,39 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
           disabled={loading}
           style={{
             width: '100%',
-            padding: '12px',
+            padding: '11px 16px',
             marginBottom: 20,
-            background: 'rgba(99, 102, 241, 0.12)',
-            border: '1px solid rgba(99, 102, 241, 0.35)',
+            background: 'var(--emerald-bg)',
+            border: '1px solid var(--emerald-border)',
             borderRadius: 'var(--radius-md)',
-            color: '#a5b4fc',
-            fontSize: '0.9rem',
+            color: 'var(--emerald-text)',
+            fontSize: '0.88rem',
             fontWeight: 700,
             cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            transition: 'all 0.2s ease'
+            transition: 'background 0.15s ease'
           }}
-          onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(99, 102, 241, 0.22)')}
-          onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(99, 102, 241, 0.12)')}
         >
-          <Sparkles size={16} color="#818cf8" />
-          Quick Test Demo (Sharma Kirana Store)
+          Quick Demo: Sharma Kirana Store
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '16px 0', color: 'var(--text-dim)', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '16px 0 20px', color: 'var(--text-dim)', fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
           <div style={{ flex: 1, height: 1, background: 'var(--border-subtle)' }} />
-          <span>Or sign in with mobile</span>
+          <span>Or login with mobile</span>
           <div style={{ flex: 1, height: 1, background: 'var(--border-subtle)' }} />
         </div>
 
         {error && (
-          <div style={{ background: 'rgba(244, 63, 94, 0.1)', border: '1px solid rgba(244, 63, 94, 0.3)', color: '#fca5a5', padding: '10px 14px', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', marginBottom: 16 }}>
+          <div
+            style={{
+              background: 'var(--ruby-bg)',
+              border: '1px solid var(--ruby-border)',
+              color: 'var(--ruby-text)',
+              padding: '10px 14px',
+              borderRadius: 'var(--radius-md)',
+              fontSize: '0.85rem',
+              marginBottom: 16
+            }}
+          >
             {error}
           </div>
         )}
@@ -186,16 +192,29 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
         {!otpSent ? (
           <form onSubmit={handleSendOtp} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
                 Shopkeeper Mobile Number
               </label>
               <div style={{ display: 'flex', gap: 8 }}>
-                <span style={{ display: 'flex', alignItems: 'center', padding: '0 12px', background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600, border: '1px solid var(--border-subtle)' }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0 12px',
+                    background: 'var(--bg-subtle)',
+                    borderRadius: 'var(--radius-md)',
+                    color: 'var(--text-secondary)',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    border: '1px solid var(--border-subtle)'
+                  }}
+                >
                   +91
                 </span>
                 <input
                   id="input-owner-mobile"
                   type="tel"
+                  inputMode="numeric"
                   maxLength={10}
                   className="input-field"
                   placeholder="98765 43210"
@@ -211,7 +230,7 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
               type="submit"
               className="btn-primary"
               disabled={loading}
-              style={{ width: '100%', padding: '12px' }}
+              style={{ width: '100%' }}
             >
               {loading ? 'Sending OTP...' : 'Send Login OTP'}
             </button>
@@ -219,18 +238,29 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
         ) : (
           <form onSubmit={handleVerifyOtp} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {devOtpNotice && (
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#6ee7b7', padding: '8px 12px', borderRadius: 'var(--radius-md)', fontSize: '0.82rem' }}>
-                ✓ {devOtpNotice} (Auto-filled for demo)
+              <div
+                style={{
+                  background: 'var(--emerald-bg)',
+                  border: '1px solid var(--emerald-border)',
+                  color: 'var(--emerald-text)',
+                  padding: '8px 12px',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: '0.82rem',
+                  fontWeight: 600
+                }}
+              >
+                {devOtpNotice} (Auto-filled)
               </div>
             )}
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>
-                Enter Verification OTP
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                Enter 4-Digit OTP
               </label>
               <input
                 id="input-owner-otp"
                 type="text"
+                inputMode="numeric"
                 maxLength={6}
                 className="input-field"
                 placeholder="1234"
@@ -241,8 +271,8 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>
-                Shop / Business Name (if new)
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                Shop Name (if registering new store)
               </label>
               <input
                 id="input-owner-shopname"
@@ -285,19 +315,16 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
               window.dispatchEvent(new PopStateEvent('popstate'));
             }}
             style={{
-              color: 'var(--text-dim)',
+              color: 'var(--text-muted)',
               fontSize: '0.78rem',
               textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
-              transition: 'color 0.2s ease'
+              gap: 6
             }}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#10b981'}
-            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-dim)'}
           >
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
-            System Status & Health Diagnostics (/health)
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--emerald)' }}></span>
+            System Diagnostics (/health)
           </a>
         </div>
       </div>

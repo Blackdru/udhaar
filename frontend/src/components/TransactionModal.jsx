@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { X, Edit2, Ban, ShieldCheck, Clock, Receipt, History, ExternalLink } from 'lucide-react';
 import { getReceiptUrl } from '../utils/api';
 
 export default function TransactionModal({ transactionId, token, onClose, onUpdated }) {
@@ -97,65 +96,69 @@ export default function TransactionModal({ transactionId, token, onClose, onUpda
   const t = data?.transaction;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        backdropFilter: 'blur(8px)',
-        zIndex: 9999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 16
-      }}
-      className="animate-fade-in"
-    >
-      <div
-        className="glass-panel"
-        style={{
-          width: '100%',
-          maxWidth: 580,
-          maxHeight: '92vh',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          padding: 0,
-          border: '1px solid rgba(99, 102, 241, 0.3)'
-        }}
-      >
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-surface)' }}>
           <div>
-            <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: '0.74rem', fontFamily: 'monospace', color: 'var(--text-muted)' }}>
               {t?.transaction_number || 'Loading...'}
             </span>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Transaction Details</h2>
+            <h2 style={{ fontSize: '1.18rem', fontWeight: 800, color: 'var(--text-main)', marginTop: 2 }}>
+              Transaction Details
+            </h2>
           </div>
-          <button id="btn-close-txn-modal" onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-            <X size={22} />
+          <button
+            id="btn-close-txn-modal"
+            onClick={onClose}
+            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.4rem', lineHeight: 1, padding: 6 }}
+            aria-label="Close"
+          >
+            ×
           </button>
         </div>
 
         {/* Body */}
-        <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
+        <div style={{ padding: '20px', overflowY: 'auto', flex: 1, backgroundColor: 'var(--bg-page)' }}>
           {loading ? (
             <div style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>Loading transaction...</div>
           ) : error ? (
-            <div style={{ color: 'var(--accent-rose)', textAlign: 'center', padding: 20 }}>{error}</div>
+            <div style={{ color: 'var(--ruby-text)', textAlign: 'center', padding: 20 }}>{error}</div>
           ) : (
             <>
               {/* Amount and Status banner */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', background: 'rgba(15, 23, 42, 0.85)', borderRadius: 'var(--radius-md)', marginBottom: 20, border: '1px solid var(--border-subtle)' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '16px 18px',
+                  background: 'var(--bg-surface)',
+                  borderRadius: 'var(--radius-md)',
+                  marginBottom: 16,
+                  border: '1px solid var(--border-subtle)',
+                  boxShadow: 'var(--shadow-xs)'
+                }}
+              >
                 <div>
-                  <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>Recorded Credit</span>
-                  <div style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: t.status === 'ACTIVE' ? '#ffffff' : 'var(--text-dim)', textDecoration: t.status === 'VOIDED' ? 'line-through' : 'none' }}>
+                  <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>
+                    Credit Amount
+                  </span>
+                  <div
+                    style={{
+                      fontSize: '2rem',
+                      fontWeight: 800,
+                      fontFamily: 'var(--font-heading)',
+                      color: t.status === 'ACTIVE' ? 'var(--text-main)' : 'var(--text-dim)',
+                      textDecoration: t.status === 'VOIDED' ? 'line-through' : 'none'
+                    }}
+                  >
                     ₹{Number(t.amount).toLocaleString('en-IN')}
                   </div>
                 </div>
                 <div>
                   {t.status === 'ACTIVE' ? (
-                    <span className="badge-active">ACTIVE LEDGER</span>
+                    <span className="badge-active">ACTIVE</span>
                   ) : (
                     <span className="badge-voided">VOIDED</span>
                   )}
@@ -163,11 +166,11 @@ export default function TransactionModal({ transactionId, token, onClose, onUpda
               </div>
 
               {/* Transaction information / Editable form */}
-              <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', marginBottom: 20 }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', marginBottom: 16, boxShadow: 'var(--shadow-xs)' }}>
                 {isEditing ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: 4 }}>Customer Name</label>
+                      <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>Customer Name</label>
                       <input
                         id="input-edit-cust-name"
                         type="text"
@@ -177,7 +180,7 @@ export default function TransactionModal({ transactionId, token, onClose, onUpda
                       />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: 4 }}>Purchase / Item Note</label>
+                      <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>Purchase Note</label>
                       <input
                         id="input-edit-notes"
                         type="text"
@@ -196,56 +199,42 @@ export default function TransactionModal({ transactionId, token, onClose, onUpda
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Customer:</span>
-                      <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{t.customer_name} (+91 {t.customer_mobile})</span>
+                      <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>Customer:</span>
+                      <span style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-main)' }}>{t.customer_name} (+91 {t.customer_mobile})</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Notes:</span>
-                      <span style={{ fontSize: '0.85rem', fontWeight: 500, color: t.notes ? 'var(--text-main)' : 'var(--text-dim)' }}>
+                      <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>Notes:</span>
+                      <span style={{ fontSize: '0.84rem', fontWeight: 500, color: t.notes ? 'var(--text-main)' : 'var(--text-dim)' }}>
                         {t.notes || 'None'}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Created At:</span>
-                      <span style={{ fontSize: '0.85rem' }}>{new Date(t.created_at).toLocaleString('en-IN')}</span>
+                      <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>Created At:</span>
+                      <span style={{ fontSize: '0.84rem', color: 'var(--text-secondary)' }}>{new Date(t.created_at).toLocaleString('en-IN')}</span>
                     </div>
                     {t.voided_at && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-rose)' }}>
-                        <span style={{ fontSize: '0.85rem' }}>Void Reason:</span>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{t.void_reason}</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--ruby-text)' }}>
+                        <span style={{ fontSize: '0.84rem' }}>Void Reason:</span>
+                        <span style={{ fontSize: '0.84rem', fontWeight: 600 }}>{t.void_reason}</span>
                       </div>
                     )}
 
                     {t.status === 'ACTIVE' && (
-                      <div style={{ display: 'flex', gap: 10, marginTop: 10, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                      <div style={{ display: 'flex', gap: 10, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border-subtle)' }}>
                         <button
                           id="btn-edit-txn"
                           onClick={() => setIsEditing(true)}
                           className="btn-secondary"
-                          style={{ flex: 1, padding: '8px 12px', fontSize: '0.82rem' }}
+                          style={{ flex: 1, padding: '7px 12px', fontSize: '0.82rem' }}
                         >
-                          <Edit2 size={14} />
                           Edit Details
                         </button>
                         <button
                           id="btn-trigger-void"
                           onClick={() => setIsVoiding(true)}
-                          style={{
-                            flex: 1,
-                            padding: '8px 12px',
-                            fontSize: '0.82rem',
-                            background: 'rgba(244, 63, 94, 0.12)',
-                            color: '#f43f5e',
-                            border: '1px solid rgba(244, 63, 94, 0.3)',
-                            borderRadius: 'var(--radius-md)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 6
-                          }}
+                          className="btn-danger"
+                          style={{ flex: 1, padding: '7px 12px', fontSize: '0.82rem' }}
                         >
-                          <Ban size={14} />
                           Void Transaction
                         </button>
                       </div>
@@ -256,16 +245,16 @@ export default function TransactionModal({ transactionId, token, onClose, onUpda
 
               {/* Void Confirmation Form */}
               {isVoiding && (
-                <div style={{ background: 'rgba(244, 63, 94, 0.08)', border: '1px solid rgba(244, 63, 94, 0.3)', borderRadius: 'var(--radius-md)', padding: 16, marginBottom: 20 }}>
-                  <h4 style={{ fontSize: '0.9rem', color: '#fca5a5', marginBottom: 6, fontWeight: 700 }}>Void this Udhaar Record?</h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: 10 }}>
-                    This transaction will be marked as VOIDED. It will be removed from outstanding totals while preserving the audit record.
+                <div style={{ background: 'var(--ruby-bg)', border: '1px solid var(--ruby-border)', borderRadius: 'var(--radius-md)', padding: 16, marginBottom: 16 }}>
+                  <h4 style={{ fontSize: '0.9rem', color: 'var(--ruby-text)', marginBottom: 6, fontWeight: 700 }}>Void this Udhaar Record?</h4>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 10 }}>
+                    This transaction will be marked as VOIDED and removed from outstanding totals while preserving the audit record.
                   </p>
                   <input
                     id="input-void-reason"
                     type="text"
                     className="input-field"
-                    placeholder="Enter reason (e.g. Customer returned items / paid cash directly)"
+                    placeholder="Enter reason (e.g. Paid cash directly / return)"
                     value={voidReason}
                     onChange={(e) => setVoidReason(e.target.value)}
                     style={{ marginBottom: 10 }}
@@ -276,7 +265,8 @@ export default function TransactionModal({ transactionId, token, onClose, onUpda
                       id="btn-confirm-void"
                       onClick={handleConfirmVoid}
                       disabled={voiding}
-                      style={{ background: 'var(--accent-rose)', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: 'var(--radius-md)', fontWeight: 600, cursor: 'pointer' }}
+                      className="btn-danger"
+                      style={{ background: 'var(--ruby)', color: '#ffffff' }}
                     >
                       {voiding ? 'Voiding...' : 'Confirm Void'}
                     </button>
@@ -286,26 +276,26 @@ export default function TransactionModal({ transactionId, token, onClose, onUpda
 
               {/* Attached Bill / Receipt View */}
               {t.receipt_url && (
-                <div style={{ marginBottom: 20 }}>
+                <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', marginBottom: 16 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <h4 style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Receipt size={16} color="#818cf8" /> Attached Bill Evidence
+                    <h4 style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
+                      Attached Bill
                     </h4>
                     <a
                       href={getReceiptUrl(t.receipt_url)}
                       target="_blank"
                       rel="noreferrer"
-                      style={{ fontSize: '0.78rem', color: '#818cf8', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}
+                      style={{ fontSize: '0.78rem', color: 'var(--text-main)', textDecoration: 'underline', fontWeight: 600 }}
                     >
-                      <ExternalLink size={12} /> Open Full In New Tab
+                      Open Full Size
                     </a>
                   </div>
-                  <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--border-subtle)', background: 'rgba(0,0,0,0.3)', textAlign: 'center' }}>
-                    <a href={getReceiptUrl(t.receipt_url)} target="_blank" rel="noreferrer" title="Click to view full image in new tab">
+                  <div style={{ borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border-subtle)', background: 'var(--bg-subtle)', textAlign: 'center' }}>
+                    <a href={getReceiptUrl(t.receipt_url)} target="_blank" rel="noreferrer">
                       <img
                         src={getReceiptUrl(t.receipt_url)}
                         alt="Receipt bill"
-                        style={{ maxWidth: '100%', maxHeight: 320, objectFit: 'contain', display: 'block', margin: '0 auto', cursor: 'zoom-in' }}
+                        style={{ maxWidth: '100%', maxHeight: 280, objectFit: 'contain', display: 'block', margin: '0 auto' }}
                       />
                     </a>
                   </div>
@@ -313,17 +303,17 @@ export default function TransactionModal({ transactionId, token, onClose, onUpda
               )}
 
               {/* Audit Trail Section */}
-              <div>
-                <h4 style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <History size={16} color="#818cf8" /> Audit Trail (Ledger Integrity)
+              <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+                <h4 style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10, fontWeight: 700 }}>
+                  Audit Trail
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {data?.audits?.map((a) => (
                     <div
                       key={a.id}
                       style={{
-                        padding: '10px 14px',
-                        background: 'rgba(255, 255, 255, 0.02)',
+                        padding: '8px 12px',
+                        background: 'var(--bg-subtle)',
                         border: '1px solid var(--border-subtle)',
                         borderRadius: 'var(--radius-sm)',
                         fontSize: '0.8rem',
@@ -333,10 +323,10 @@ export default function TransactionModal({ transactionId, token, onClose, onUpda
                       }}
                     >
                       <div>
-                        <span style={{ fontWeight: 700, color: '#818cf8', marginRight: 6 }}>{a.action}</span>
-                        <span style={{ color: 'var(--text-muted)' }}>by {a.performed_by}</span>
+                        <span style={{ fontWeight: 700, color: 'var(--text-main)', marginRight: 6 }}>{a.action}</span>
+                        <span style={{ color: 'var(--text-secondary)' }}>by {a.performed_by}</span>
                       </div>
-                      <span style={{ color: 'var(--text-dim)', fontSize: '0.72rem' }}>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>
                         {new Date(a.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>

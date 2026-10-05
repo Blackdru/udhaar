@@ -1,23 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Activity,
-  Server,
-  Database,
-  Wifi,
-  ShieldCheck,
-  CheckCircle2,
-  AlertTriangle,
-  RefreshCw,
-  Copy,
-  Check,
-  ArrowLeft,
-  HardDrive,
-  Clock,
-  Cpu,
-  Layers,
-  CheckCircle,
-  Globe
-} from 'lucide-react';
 import { getWsUrl, API_BASE_URL } from '../utils/api';
 
 export default function HealthCheckView({ onBack }) {
@@ -44,7 +25,7 @@ export default function HealthCheckView({ onBack }) {
   const [backendError, setBackendError] = useState(null);
 
   // WebSocket State
-  const [wsStatus, setWsStatus] = useState('checking'); // 'connected' | 'error' | 'checking'
+  const [wsStatus, setWsStatus] = useState('checking');
 
   const checkHealth = useCallback(async () => {
     setLoading(true);
@@ -164,338 +145,213 @@ export default function HealthCheckView({ onBack }) {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)' }}>
-      {/* Top Navigation */}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-page)' }}>
+      {/* Top Header */}
       <header
         style={{
           borderBottom: '1px solid var(--border-subtle)',
-          background: 'rgba(9, 13, 22, 0.85)',
-          backdropFilter: 'blur(16px)',
+          background: 'var(--bg-surface)',
           position: 'sticky',
           top: 0,
           zIndex: 100
         }}
       >
-        <div style={{ maxWidth: 1000, margin: '0 auto', padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto', padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button
               onClick={onBack}
               className="btn-secondary"
-              style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 6 }}
-              title="Return to application"
+              style={{ padding: '6px 12px', fontSize: '0.84rem' }}
             >
-              <ArrowLeft size={16} />
-              <span>Back</span>
+              ← Back
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: 10,
-                  background: 'var(--primary-gradient)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(99, 102, 241, 0.35)'
-                }}
-              >
-                <Activity size={18} color="#ffffff" />
-              </div>
-              <div>
-                <h1 style={{ fontSize: '1.05rem', fontWeight: 800 }}>System Health & Diagnostics</h1>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Live status monitor for Frontend & Backend</p>
-              </div>
+            <div>
+              <h1 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)' }}>System Diagnostics</h1>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Status monitor for Frontend & Backend</p>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <button
-              id="btn-health-refresh"
-              onClick={checkHealth}
-              disabled={loading}
-              className="btn-secondary"
-              style={{ padding: '8px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}
-            >
-              <RefreshCw size={15} className={loading ? 'animate-spin' : ''} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
-              <span>{loading ? 'Checking...' : 'Re-check'}</span>
-            </button>
-          </div>
+          <button
+            id="btn-health-refresh"
+            onClick={checkHealth}
+            disabled={loading}
+            className="btn-secondary"
+            style={{ padding: '6px 12px', fontSize: '0.84rem' }}
+          >
+            {loading ? 'Checking...' : 'Re-check'}
+          </button>
         </div>
       </header>
 
       {/* Main Container */}
-      <main style={{ maxWidth: 1000, margin: '0 auto', padding: '24px 20px', width: '100%', flex: 1, display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <main style={{ maxWidth: 1000, margin: '0 auto', padding: '20px 16px', width: '100%', flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
         {/* Overall Status Banner */}
         <div
-          className="glass-panel"
+          className="card-surface"
           style={{
-            padding: '20px 24px',
-            borderRadius: 'var(--radius-lg)',
-            background: isAllHealthy
-              ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(9, 13, 22, 0.8) 100%)'
-              : 'linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(9, 13, 22, 0.8) 100%)',
-            border: `1px solid ${isAllHealthy ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`,
+            padding: '18px 20px',
+            borderLeft: `4px solid ${isAllHealthy ? 'var(--emerald)' : 'var(--amber)'}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: 16
+            gap: 14
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: '50%',
-                background: isAllHealthy ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: `1px solid ${isAllHealthy ? '#10b981' : '#f59e0b'}`
-              }}
-            >
-              {isAllHealthy ? <CheckCircle2 size={28} color="#10b981" /> : <AlertTriangle size={28} color="#f59e0b" />}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                {isAllHealthy ? 'All Systems Fully Operational' : 'Degraded System Performance'}
+              </h2>
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  padding: '2px 8px',
+                  borderRadius: 'var(--radius-full)',
+                  background: isAllHealthy ? 'var(--emerald-bg)' : 'var(--amber-bg)',
+                  color: isAllHealthy ? 'var(--emerald-text)' : 'var(--amber-text)',
+                  border: `1px solid ${isAllHealthy ? 'var(--emerald-border)' : 'var(--amber-border)'}`
+                }}
+              >
+                {isAllHealthy ? 'HEALTHY' : 'ATTENTION'}
+              </span>
             </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
-                  {isAllHealthy ? 'All Systems Fully Operational' : 'Degraded System Performance'}
-                </h2>
-                <span
-                  style={{
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    padding: '2px 8px',
-                    borderRadius: 999,
-                    background: isAllHealthy ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                    color: isAllHealthy ? '#34d399' : '#fbbf24',
-                    border: `1px solid ${isAllHealthy ? 'rgba(16, 185, 129, 0.4)' : 'rgba(245, 158, 11, 0.4)'}`
-                  }}
-                >
-                  {isAllHealthy ? 'HEALTHY' : 'ATTENTION'}
-                </span>
-              </div>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: 4 }}>
-                Frontend Web App and Backend API Engine checks evaluated at {lastChecked || 'just now'}
-              </p>
-            </div>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: 2 }}>
+              Last evaluated at {lastChecked || 'just now'}
+            </p>
           </div>
 
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
             <button
               onClick={() => setShowRawJson(!showRawJson)}
               className="btn-secondary"
-              style={{ padding: '8px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}
+              style={{ padding: '7px 12px', fontSize: '0.82rem' }}
             >
-              <Cpu size={14} />
-              <span>{showRawJson ? 'Hide JSON' : 'Raw JSON'}</span>
+              {showRawJson ? 'Hide JSON' : 'Raw JSON'}
             </button>
             <button
               onClick={handleCopyJson}
               className="btn-secondary"
-              style={{ padding: '8px 14px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}
+              style={{ padding: '7px 12px', fontSize: '0.82rem' }}
             >
-              {copied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
-              <span>{copied ? 'Copied!' : 'Copy Report'}</span>
+              {copied ? 'Copied!' : 'Copy Report'}
             </button>
           </div>
         </div>
 
         {/* 2-Column Health Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
           {/* Card 1: Frontend Health */}
-          <div className="glass-panel" style={{ padding: 22, borderRadius: 'var(--radius-lg)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 10,
-                    background: 'rgba(99, 102, 241, 0.15)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#818cf8',
-                    border: '1px solid rgba(99, 102, 241, 0.3)'
-                  }}
-                >
-                  <Layers size={18} />
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>Frontend Web Client</h3>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>SPA Client Runtime</p>
-                </div>
+          <div className="card-surface" style={{ padding: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <div>
+                <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-main)' }}>Frontend Web Client</h3>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>SPA Client Runtime</p>
               </div>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  padding: '3px 8px',
-                  borderRadius: 6,
-                  background: 'rgba(16, 185, 129, 0.15)',
-                  color: '#10b981',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 5
-                }}
-              >
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }}></span>
-                HEALTHY
-              </span>
+              <span className="badge-active">HEALTHY</span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: '0.85rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
-                <span style={{ color: 'var(--text-muted)' }}>Service Name</span>
-                <span style={{ fontWeight: 600 }}>{frontendHealth.service}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.84rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Service</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{frontendHealth.service}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Version</span>
-                <span style={{ fontWeight: 600, fontFamily: 'monospace' }}>v{frontendHealth.version}</span>
+                <span style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--text-main)' }}>v{frontendHealth.version}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Framework</span>
-                <span style={{ fontWeight: 600 }}>{frontendHealth.framework}</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{frontendHealth.framework}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
-                <span style={{ color: 'var(--text-muted)' }}>Network Status</span>
-                <span style={{ fontWeight: 600, color: frontendHealth.isOnline ? '#10b981' : '#f43f5e' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Network</span>
+                <span style={{ fontWeight: 600, color: frontendHealth.isOnline ? 'var(--emerald-text)' : 'var(--ruby-text)' }}>
                   {frontendHealth.isOnline ? 'Online' : 'Offline'}
                 </span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
-                <span style={{ color: 'var(--text-muted)' }}>Local Storage</span>
-                <span style={{ fontWeight: 600, color: frontendHealth.localStorageStatus === 'operational' ? '#10b981' : '#f59e0b' }}>
-                  {frontendHealth.localStorageStatus}
-                </span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Storage</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{frontendHealth.localStorageStatus}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
-                <span style={{ color: 'var(--text-muted)' }}>Domain</span>
-                <span style={{ fontWeight: 600, color: '#38bdf8' }}>{window.location.origin || 'https://udhaar.store'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
-                <span style={{ color: 'var(--text-muted)' }}>Health Check Route</span>
-                <span style={{ fontWeight: 600, fontFamily: 'monospace', color: '#818cf8' }}>/health</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Route</span>
+                <span style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--text-main)' }}>/health</span>
               </div>
             </div>
           </div>
 
           {/* Card 2: Backend Health */}
-          <div className="glass-panel" style={{ padding: 22, borderRadius: 'var(--radius-lg)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 10,
-                    background: 'rgba(16, 185, 129, 0.15)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#10b981',
-                    border: '1px solid rgba(16, 185, 129, 0.3)'
-                  }}
-                >
-                  <Server size={18} />
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>Backend API Engine</h3>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Express Server & Database</p>
-                </div>
+          <div className="card-surface" style={{ padding: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <div>
+                <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-main)' }}>Backend API Engine</h3>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Express Server & Database</p>
               </div>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  padding: '3px 8px',
-                  borderRadius: 6,
-                  background: backendHealth?.status === 'healthy' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)',
-                  color: backendHealth?.status === 'healthy' ? '#10b981' : '#f43f5e',
-                  border: `1px solid ${backendHealth?.status === 'healthy' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(244, 63, 94, 0.3)'}`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 5
-                }}
-              >
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: backendHealth?.status === 'healthy' ? '#10b981' : '#f43f5e' }}></span>
+              <span className={backendHealth?.status === 'healthy' ? 'badge-active' : 'badge-voided'}>
                 {backendHealth?.status ? backendHealth.status.toUpperCase() : 'CHECKING'}
               </span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: '0.85rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
-                <span style={{ color: 'var(--text-muted)' }}>Server Domain</span>
-                <span style={{ fontWeight: 600, color: '#38bdf8' }}>{API_BASE_URL || 'https://server.udhaar.store'}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.84rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Server URL</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{API_BASE_URL || 'Local / Relative Proxy'}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
-                <span style={{ color: 'var(--text-muted)' }}>API Endpoints</span>
-                <span style={{ fontWeight: 600, fontFamily: 'monospace' }}>/health & /api/health</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Endpoints</span>
+                <span style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--text-main)' }}>/health & /api/health</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
-                <span style={{ color: 'var(--text-muted)' }}>Response Latency</span>
-                <span style={{ fontWeight: 700, color: backendLatency < 150 ? '#10b981' : '#f59e0b' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Latency</span>
+                <span style={{ fontWeight: 700, color: backendLatency < 150 ? 'var(--emerald-text)' : 'var(--amber-text)' }}>
                   {backendLatency !== null ? `${backendLatency} ms` : '...'}
                 </span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Database</span>
-                <span style={{ fontWeight: 600 }}>
+                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>
                   {backendHealth?.database?.mode || backendHealth?.databaseMode || 'Local SQLite'}
-                  <span style={{ marginLeft: 6, fontSize: '0.75rem', color: '#10b981' }}>
-                    ({backendHealth?.database?.status || 'ok'})
-                  </span>
                 </span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Storage Engine</span>
-                <span style={{ fontWeight: 600 }}>{backendHealth?.storageMode || 'Local Disk'}</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{backendHealth?.storageMode || 'Local Disk'}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
-                <span style={{ color: 'var(--text-muted)' }}>Server Uptime</span>
-                <span style={{ fontWeight: 600, fontFamily: 'monospace' }}>{formatUptime(backendHealth?.uptime)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(15, 23, 42, 0.5)', borderRadius: 8 }}>
-                <span style={{ color: 'var(--text-muted)' }}>Realtime WebSocket</span>
-                <span style={{ fontWeight: 600, color: wsStatus === 'connected' ? '#10b981' : '#f59e0b' }}>
-                  {wsStatus === 'connected' ? 'Connected (Live)' : wsStatus === 'checking' ? 'Testing...' : 'Ready / Standing by'}
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>WebSocket</span>
+                <span style={{ fontWeight: 600, color: wsStatus === 'connected' ? 'var(--emerald-text)' : 'var(--text-muted)' }}>
+                  {wsStatus === 'connected' ? 'Live Connected' : wsStatus === 'checking' ? 'Testing...' : 'Ready / Standing by'}
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Raw JSON viewer modal / accordion */}
+        {/* Raw JSON viewer */}
         {showRawJson && (
-          <div className="glass-panel" style={{ padding: 20, borderRadius: 'var(--radius-lg)' }}>
+          <div className="card-surface" style={{ padding: 18 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Cpu size={16} color="#818cf8" />
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Diagnostics JSON Payload</h3>
-              </div>
+              <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-main)' }}>Diagnostics JSON</h3>
               <button
                 onClick={handleCopyJson}
                 className="btn-secondary"
-                style={{ padding: '4px 10px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: 4 }}
+                style={{ padding: '4px 10px', fontSize: '0.76rem' }}
               >
-                {copied ? <Check size={12} color="#10b981" /> : <Copy size={12} />}
-                <span>{copied ? 'Copied' : 'Copy'}</span>
+                {copied ? 'Copied' : 'Copy'}
               </button>
             </div>
             <pre
               style={{
-                background: 'rgba(0, 0, 0, 0.5)',
-                padding: 16,
-                borderRadius: 8,
-                fontSize: '0.8rem',
+                background: 'var(--bg-subtle)',
+                padding: 14,
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '0.78rem',
                 fontFamily: 'monospace',
-                color: '#cbd5e1',
+                color: 'var(--text-main)',
                 overflowX: 'auto',
-                maxHeight: 280,
+                maxHeight: 260,
                 border: '1px solid var(--border-subtle)'
               }}
             >
@@ -503,21 +359,6 @@ export default function HealthCheckView({ onBack }) {
             </pre>
           </div>
         )}
-
-        {/* Bottom Actions & Help */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, flexWrap: 'wrap', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            <ShieldCheck size={16} color="#10b981" />
-            <span>Health endpoints are ready for Docker, Kubernetes, AWS ALB, and uptime monitors at <code>/health</code>.</span>
-          </div>
-          <button
-            onClick={onBack}
-            className="btn-primary"
-            style={{ padding: '10px 20px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 8 }}
-          >
-            <span>Return to Store</span>
-          </button>
-        </div>
       </main>
     </div>
   );
