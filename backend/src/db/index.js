@@ -4,14 +4,16 @@ const path = require('path');
 const crypto = require('crypto');
 require('dotenv').config();
 
-const DB_MODE = (process.env.DB_MODE || 'local').toLowerCase();
-const isSupabase = DB_MODE === 'supabase' && !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://hgjuanpwcxdkhrdkvwgd.supabase.co';
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnanVhbnB3Y3hka2hyZGt2d2dkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDkyNDU0MSwiZXhwIjoyMTA2NTAwNTQxfQ.Q7kLP6e-3tt6z3KH6Sa17rmAq-m0MRqGAZK--rCx7i0';
+const DB_MODE = (process.env.DB_MODE || 'supabase').toLowerCase();
+const isSupabase = DB_MODE === 'supabase' && !!SUPABASE_URL && !!SUPABASE_SERVICE_ROLE_KEY;
 
 let sqliteDb = null;
 let supabaseClient = null;
 
 if (isSupabase) {
-  supabaseClient = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+  supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: { persistSession: false }
   });
 } else {
