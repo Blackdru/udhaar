@@ -10,31 +10,6 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
   const [error, setError] = useState('');
   const [devOtpNotice, setDevOtpNotice] = useState('');
 
-  // 1-Click Demo Login as Sharma Kirana Store
-  const handleQuickDemoLogin = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          mobile: '9876543210',
-          otp: '1234'
-        })
-      });
-      const data = await res.json();
-      if (data.success) {
-        onLoginSuccess(data.token, data.owner, data.business);
-      } else {
-        setError(data.message || 'Demo login failed.');
-      }
-    } catch (e) {
-      setError('Connection error. Please ensure the backend is running.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -144,34 +119,6 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
           </p>
         </div>
 
-        {/* 1-Click Quick Demo Button */}
-        <button
-          id="btn-quick-demo-login"
-          type="button"
-          onClick={handleQuickDemoLogin}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '11px 16px',
-            marginBottom: 20,
-            background: 'var(--emerald-bg)',
-            border: '1px solid var(--emerald-border)',
-            borderRadius: 'var(--radius-md)',
-            color: 'var(--emerald-text)',
-            fontSize: '0.88rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-            transition: 'background 0.15s ease'
-          }}
-        >
-          Quick Demo: Sharma Kirana Store
-        </button>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '16px 0 20px', color: 'var(--text-dim)', fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-          <div style={{ flex: 1, height: 1, background: 'var(--border-subtle)' }} />
-          <span>Or login with mobile</span>
-          <div style={{ flex: 1, height: 1, background: 'var(--border-subtle)' }} />
-        </div>
 
         {error && (
           <div
