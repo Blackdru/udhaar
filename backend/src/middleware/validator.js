@@ -21,7 +21,9 @@ const schemas = {
 
   verifyOtp: Joi.object({
     mobile: Joi.string().pattern(/^[6-9]\d{9}$/).required(),
-    otp: Joi.string().length(6).required(),
+    otp: Joi.string().pattern(/^\d{4,6}$/).required().messages({
+      'string.pattern.base': 'OTP must be 4 to 6 digits.'
+    }),
     name: Joi.string().max(100).allow('', null),
     shopName: Joi.string().max(150).allow('', null)
   }),

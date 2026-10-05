@@ -112,7 +112,7 @@ function seedInitialData() {
   db.prepare(`
     INSERT INTO owners (id, mobile, name, otp_code, otp_expires_at, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?)
-  `).run(ownerId, '9876543210', 'Rajesh Sharma', '123456', new Date(Date.now() + 864000000).toISOString(), now, now);
+  `).run(ownerId, '9876543210', 'Rajesh Sharma', '1234', new Date(Date.now() + 864000000).toISOString(), now, now);
 
   // Seed Business
   db.prepare(`

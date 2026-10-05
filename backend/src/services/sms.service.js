@@ -4,15 +4,58 @@ const https = require('https');
 
 class SmsService {
   static async sendOtp(mobile, otp) {
-    const provider = (process.env.SMS_PROVIDER || 'dev').toLowerCase();
+    const provider = (process.env.SMS_PROVIDER || 'renflair').toLowerCase();
+    let cleanMobile = String(mobile).replace(/\D/g, '');
+    if (cleanMobile.length === 12 && cleanMobile.startsWith('91')) {
+      cleanMobile = cleanMobile.slice(2);
+    }
 
-    // 1. Fast2SMS (Popular low-cost Indian SMS provider for Kirana merchants)
+    // 1. Renflair SMS Gateway (DLT approved India transactional SMS)
+    if (provider === 'renflair' || process.env.RENFLAIR_API_KEY) {
+      const apiKey = process.env.RENFLAIR_API_KEY || '576d026223582a390cd323bef4bad026';
+      const url = `https://sms.renflair.in/V1.php?API=${encodeURIComponent(apiKey)}&PHONE=${encodeURIComponent(cleanMobile)}&OTP=${encodeURIComponent(otp)}`;
+
+      return new Promise((resolve) => {
+        https.get(url, (res) => {
+          let data = '';
+          res.on('data', chunk => { data += chunk; });
+          res.on('end', () => {
+            try {
+              const json = JSON.parse(data);
+              const isSuccess = json.status === 'SUCCESS' || res.statusCode === 200;
+              console.log(`[SMS-Renflair] Dispatched OTP to +91 ${cleanMobile}:`, json);
+              resolve({
+                success: isSuccess,
+                provider: 'renflair',
+                message: json.message || 'OTP dispatched via Renflair SMS'
+              });
+            } catch (err) {
+              console.log(`[SMS-Renflair] Raw response: ${data}`);
+              resolve({
+                success: res.statusCode === 200,
+                provider: 'renflair',
+                message: data
+              });
+            }
+          });
+        }).on('error', (err) => {
+          console.error('[SMS-Renflair] Delivery failed:', err.message);
+          resolve({
+            success: false,
+            provider: 'renflair',
+            error: err.message
+          });
+        });
+      });
+    }
+
+    // 2. Fast2SMS (Popular low-cost Indian SMS provider for Kirana merchants)
     if (provider === 'fast2sms' && process.env.FAST2SMS_API_KEY) {
       try {
         const body = JSON.stringify({
           route: 'otp',
           variables_values: otp,
-          numbers: mobile
+          numbers: cleanMobile
         });
 
         const req = https.request({

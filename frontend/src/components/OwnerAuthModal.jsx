@@ -21,7 +21,7 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mobile: '9876543210',
-          otp: '123456'
+          otp: '1234'
         })
       });
       const data = await res.json();
@@ -56,8 +56,8 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
       const data = await res.json();
       if (data.success) {
         setOtpSent(true);
-        setDevOtpNotice(`OTP: ${data.devOtp || '123456'}`);
-        setOtp(data.devOtp || '123456');
+        setDevOtpNotice(`OTP: ${data.devOtp || '1234'}`);
+        setOtp(data.devOtp || '1234');
       } else {
         setError(data.message || 'Failed to send OTP.');
       }
@@ -226,14 +226,14 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>
-                Enter 6-Digit OTP
+                Enter Verification OTP
               </label>
               <input
                 id="input-owner-otp"
                 type="text"
                 maxLength={6}
                 className="input-field"
-                placeholder="123456"
+                placeholder="1234"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 required

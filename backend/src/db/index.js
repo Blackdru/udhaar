@@ -39,7 +39,7 @@ async function seedInitialDataIfEmpty() {
         id: ownerId,
         mobile: '9876543210',
         name: 'Rajesh Sharma',
-        otp_code: '123456',
+        otp_code: '1234',
         otp_expires_at: new Date(Date.now() + 864000000).toISOString(),
         created_at: now,
         updated_at: now
