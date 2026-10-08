@@ -263,20 +263,6 @@ export default function CustomerScanFlow({ qrToken, onSuccess, onSwitchToOwner }
             </div>
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>
-              Items / Purchase Note (Optional)
-            </label>
-            <input
-              id="input-customer-notes"
-              type="text"
-              className="input-field"
-              placeholder="e.g. 5kg Basmati Rice, Oil, Tea"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-          </div>
-
           {/* Photo / Receipt Attachment */}
           <div>
             <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>
@@ -284,34 +270,72 @@ export default function CustomerScanFlow({ qrToken, onSuccess, onSwitchToOwner }
             </label>
 
             {!receiptPreview ? (
-              <label
-                id="label-receipt-upload"
-                htmlFor="input-receipt-file"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  padding: '14px',
-                  background: 'var(--bg-subtle)',
-                  border: '1.5px dashed var(--border-strong)',
-                  borderRadius: 'var(--radius-md)',
-                  cursor: 'pointer',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.86rem',
-                  fontWeight: 600
-                }}
-              >
-                Attach Bill or Receipt Photo
-                <input
-                  id="input-receipt-file"
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
-                />
-              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <label
+                  id="label-receipt-camera"
+                  htmlFor="input-receipt-camera"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    padding: '14px 10px',
+                    background: 'var(--bg-subtle)',
+                    border: '1.5px dashed var(--border-strong)',
+                    borderRadius: 'var(--radius-md)',
+                    cursor: 'pointer',
+                    color: 'var(--text-secondary)',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    textAlign: 'center',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <span style={{ fontSize: '1.25rem' }}>📷</span>
+                  <span>Take Photo</span>
+                  <input
+                    id="input-receipt-camera"
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+
+                <label
+                  id="label-receipt-gallery"
+                  htmlFor="input-receipt-gallery"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    padding: '14px 10px',
+                    background: 'var(--bg-subtle)',
+                    border: '1.5px dashed var(--border-strong)',
+                    borderRadius: 'var(--radius-md)',
+                    cursor: 'pointer',
+                    color: 'var(--text-secondary)',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    textAlign: 'center',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <span style={{ fontSize: '1.25rem' }}>🖼️</span>
+                  <span>From Gallery</span>
+                  <input
+                    id="input-receipt-gallery"
+                    type="file"
+                    accept="image/*,image/jpeg,image/png,image/webp,image/heic"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+              </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 10, background: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
                 <img

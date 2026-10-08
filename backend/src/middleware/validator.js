@@ -28,6 +28,24 @@ const schemas = {
     shopName: Joi.string().max(150).allow('', null)
   }),
 
+  simpleLogin: Joi.object({
+    mobile: Joi.string().pattern(/^[6-9]\d{9}$/).required().messages({
+      'string.pattern.base': 'Please enter a valid 10-digit Indian mobile number.'
+    }),
+    shopName: Joi.string().max(150).allow('', null),
+    name: Joi.string().max(100).allow('', null)
+  }),
+
+  simpleSignup: Joi.object({
+    mobile: Joi.string().pattern(/^[6-9]\d{9}$/).required().messages({
+      'string.pattern.base': 'Please enter a valid 10-digit Indian mobile number.'
+    }),
+    shopName: Joi.string().min(2).max(150).required().messages({
+      'string.min': 'Please enter a valid shop name (at least 2 characters).'
+    }),
+    name: Joi.string().max(100).allow('', null)
+  }),
+
   publicTransaction: Joi.object({
     qrToken: Joi.string().alphanum().min(4).max(30).required(),
     amount: Joi.number().positive().max(100000).required().messages({

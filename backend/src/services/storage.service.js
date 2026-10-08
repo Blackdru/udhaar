@@ -20,14 +20,21 @@ class StorageService {
           await client.storage.createBucket(bucketName, { public: true });
         }
 
-        const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
+        let ext = path.extname(file.originalname || '').toLowerCase();
+        if (!ext || ext === '.') {
+          ext = path.extname(file.filename || '').toLowerCase() || '.jpg';
+        }
         const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}${ext}`;
         const fileBuffer = fs.readFileSync(file.path);
+
+        const contentType = file.mimetype && file.mimetype !== 'application/octet-stream'
+          ? file.mimetype
+          : (ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg');
 
         const { data, error } = await client.storage
           .from(bucketName)
           .upload(filename, fileBuffer, {
-            contentType: file.mimetype,
+            contentType: contentType,
             upsert: false
           });
 
