@@ -384,9 +384,9 @@ export default function CustomerScanFlow({ qrToken, onSuccess, onSwitchToOwner }
         </p>
       </form>
 
-      {/* Switch to Shopkeeper Login link */}
-      {onSwitchToOwner && (
-        <div style={{ textAlign: 'center', marginTop: 24 }}>
+      {/* Switch to Shopkeeper Login link & Privacy */}
+      <div style={{ textAlign: 'center', marginTop: 24, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
+        {onSwitchToOwner && (
           <button
             id="btn-goto-owner-login"
             type="button"
@@ -395,8 +395,16 @@ export default function CustomerScanFlow({ qrToken, onSuccess, onSwitchToOwner }
           >
             Are you the store owner? Open Merchant Dashboard
           </button>
-        </div>
-      )}
+        )}
+        <a
+          href="/privacy"
+          target="_blank"
+          rel="noreferrer"
+          style={{ color: 'var(--text-dim)', fontSize: '0.78rem', textDecoration: 'none' }}
+        >
+          Privacy Policy
+        </a>
+      </div>
     </div>
   );
 }

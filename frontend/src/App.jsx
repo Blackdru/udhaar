@@ -7,6 +7,7 @@ import TransactionModal from './components/TransactionModal';
 import AnalyticsView from './components/AnalyticsView';
 import OwnerAuthModal from './components/OwnerAuthModal';
 import HealthCheckView from './components/HealthCheckView';
+import PrivacyPolicyView from './components/PrivacyPolicyView';
 import { playStoreChime } from './utils/audio';
 import { getWsUrl, getReceiptUrl } from './utils/api';
 
@@ -224,6 +225,18 @@ export default function App() {
   if (currentPath === '/health' || currentPath === '/health/') {
     return (
       <HealthCheckView
+        onBack={() => {
+          window.history.pushState({}, '', '/');
+          setCurrentPath('/');
+        }}
+      />
+    );
+  }
+
+  // Privacy Policy route e.g. /privacy
+  if (currentPath === '/privacy' || currentPath === '/privacy/') {
+    return (
+      <PrivacyPolicyView
         onBack={() => {
           window.history.pushState({}, '', '/');
           setCurrentPath('/');
@@ -852,6 +865,38 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Footer */}
+      <footer style={{ borderTop: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-surface)', padding: '14px 20px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+        <div style={{ maxWidth: 1140, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+          <div>© {new Date().getFullYear()} Udhaar Digital Credit Ledger</div>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+            <a
+              href="/privacy"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/privacy');
+                setCurrentPath('/privacy');
+              }}
+              style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}
+            >
+              Privacy Policy
+            </a>
+            <span style={{ color: 'var(--border-subtle)' }}>•</span>
+            <a
+              href="/health"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/health');
+                setCurrentPath('/health');
+              }}
+              style={{ color: 'var(--text-muted)', textDecoration: 'none' }}
+            >
+              System Diagnostics
+            </a>
+          </div>
+        </div>
+      </footer>
 
       {/* Customer Ledger Modal */}
       {selectedCustomerId && (

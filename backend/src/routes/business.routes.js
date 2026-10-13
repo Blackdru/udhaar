@@ -115,7 +115,7 @@ router.get('/me/qr', authenticateOwner, async (req, res) => {
       margin: 2,
       width: 400,
       color: {
-        dark: '#0f172a',
+        dark: '#000000',
         light: '#ffffff'
       }
     });

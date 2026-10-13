@@ -108,7 +108,7 @@ class SmsService {
 
     // 3. Fallback / Dev Mode
     console.log(`[AUTH-OTP] Generated OTP for +91 ${mobile}: ${otp}`);
-    return { success: true, provider: 'dev', devOtp: otp };
+    return { success: true, provider: 'dev' };
   }
 }
 

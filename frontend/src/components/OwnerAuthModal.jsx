@@ -10,7 +10,6 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
   const [ownerName, setOwnerName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [devOtpNotice, setDevOtpNotice] = useState('');
   const [countdown, setCountdown] = useState(30);
 
   const timerRef = useRef(null);
@@ -60,13 +59,8 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
         setOtpSent(true);
         setIsExistingUser(!!data.exists);
         setExistingShopName(data.shopName || '');
-        if (data.devOtp) {
-          setDevOtpNotice(`OTP: ${data.devOtp}`);
-          setOtp(data.devOtp);
-        } else {
-          setDevOtpNotice('');
-          setOtp('');
-        }
+        setDevOtpNotice('');
+        setOtp('');
         startCountdown();
       } else {
         setError(data.message || 'Failed to send OTP.');
@@ -277,21 +271,6 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
               </button>
             </div>
 
-            {devOtpNotice && (
-              <div
-                style={{
-                  background: 'var(--emerald-bg)',
-                  border: '1px solid var(--emerald-border)',
-                  color: 'var(--emerald-text)',
-                  padding: '8px 12px',
-                  borderRadius: 'var(--radius-md)',
-                  fontSize: '0.82rem',
-                  fontWeight: 600
-                }}
-              >
-                {devOtpNotice} (Auto-filled)
-              </div>
-            )}
 
             {/* OTP Input */}
             <div>
@@ -398,7 +377,23 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
           </form>
         )}
 
-        <div style={{ marginTop: 24, textAlign: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: 16 }}>
+        <div style={{ marginTop: 24, textAlign: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: 16, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 14 }}>
+          <a
+            href="/privacy"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, '', '/privacy');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            style={{
+              color: 'var(--text-muted)',
+              fontSize: '0.78rem',
+              textDecoration: 'none'
+            }}
+          >
+            Privacy Policy
+          </a>
+          <span style={{ color: 'var(--border-subtle)' }}>•</span>
           <a
             href="/health"
             onClick={(e) => {
@@ -416,7 +411,7 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
             }}
           >
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--emerald)' }}></span>
-            System Diagnostics (/health)
+            System Diagnostics
           </a>
         </div>
       </div>

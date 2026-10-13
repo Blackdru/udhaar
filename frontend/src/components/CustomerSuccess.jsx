@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { getReceiptUrl } from '../utils/api';
+import { playSuccessChime } from '../utils/sound';
 
 export default function CustomerSuccess({ transaction, business, onRecordAnother, onBackToStore }) {
   useEffect(() => {
+    playSuccessChime();
     try {
       confetti({
         particleCount: 60,
@@ -61,16 +63,16 @@ export default function CustomerSuccess({ transaction, business, onRecordAnother
             justifyContent: 'center',
             margin: '0 auto 16px',
             fontSize: '1.8rem',
-            fontWeight: 800
+            fontWeight: 700
           }}
         >
           ✓
         </div>
 
-        <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: 4 }}>
+        <h1 style={{ fontSize: '1.35rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: 4 }}>
           Udhaar Recorded Successfully
         </h1>
-        <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: 20 }}>
+        <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', fontWeight: 400, marginBottom: 20 }}>
           {business?.name || transaction?.business_name}
         </p>
 
@@ -84,10 +86,10 @@ export default function CustomerSuccess({ transaction, business, onRecordAnother
             marginBottom: 20
           }}
         >
-          <span style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', fontWeight: 700, display: 'block', marginBottom: 4 }}>
+          <span style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', fontWeight: 500, display: 'block', marginBottom: 4 }}>
             Recorded Credit Amount
           </span>
-          <div style={{ fontSize: '2.6rem', fontWeight: 800, color: 'var(--text-main)', fontFamily: 'var(--font-heading)' }}>
+          <div style={{ fontSize: '2.6rem', fontWeight: 700, color: 'var(--text-main)', fontFamily: 'var(--font-heading)' }}>
             ₹{Number(transaction?.amount || 0).toLocaleString('en-IN')}
           </div>
           {transaction?.notes && (
@@ -101,24 +103,24 @@ export default function CustomerSuccess({ transaction, business, onRecordAnother
         <div style={{ textAlign: 'left', background: 'var(--bg-page)', borderRadius: 'var(--radius-md)', padding: '16px', marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 12, border: '1px solid var(--border-subtle)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Transaction ID</span>
-            <span style={{ fontSize: '0.82rem', fontFamily: 'monospace', fontWeight: 700, color: 'var(--text-main)', background: 'var(--bg-subtle)', padding: '2px 8px', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
+            <span style={{ fontSize: '0.82rem', fontFamily: 'monospace', fontWeight: 500, color: 'var(--text-main)', background: 'var(--bg-subtle)', padding: '2px 8px', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
               {transaction?.transaction_number}
             </span>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Date & Time</span>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)' }}>{formattedDate}</span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 400, color: 'var(--text-main)' }}>{formattedDate}</span>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Customer Name</span>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)' }}>{transaction?.customer_name}</span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-main)' }}>{transaction?.customer_name}</span>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Mobile Number</span>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)' }}>+91 {transaction?.customer_mobile}</span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 400, color: 'var(--text-main)' }}>+91 {transaction?.customer_mobile}</span>
           </div>
 
           {transaction?.receipt_url && (
@@ -128,7 +130,7 @@ export default function CustomerSuccess({ transaction, business, onRecordAnother
                 href={getReceiptUrl(transaction.receipt_url)}
                 target="_blank"
                 rel="noreferrer"
-                style={{ fontSize: '0.82rem', color: 'var(--text-main)', textDecoration: 'underline', fontWeight: 600 }}
+                style={{ fontSize: '0.82rem', color: 'var(--text-main)', textDecoration: 'underline', fontWeight: 500 }}
               >
                 View Bill Image
               </a>

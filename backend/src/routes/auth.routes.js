@@ -51,7 +51,6 @@ router.post('/send-otp', validate('sendOtp'), async (req, res) => {
     message: exists
       ? `Welcome back! Verification code sent to +91 ${cleanMobile}.`
       : `New store registration. Verification code sent to +91 ${cleanMobile}.`,
-    devOtp: process.env.NODE_ENV === 'production' && !isDemoNumber ? undefined : otp,
     smsProvider: smsResult?.provider
   });
 });
