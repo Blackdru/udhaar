@@ -53,23 +53,16 @@ export default function PrivacyPolicyView({ onBack }) {
               </button>
             )}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div
+              <img
+                src="/logo.png"
+                alt="Udhaar"
                 style={{
                   width: 32,
                   height: 32,
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: 'var(--primary)',
-                  color: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 600,
-                  fontSize: '1rem',
-                  fontFamily: 'var(--font-heading)'
+                  objectFit: 'contain',
+                  borderRadius: 6
                 }}
-              >
-                उ
-              </div>
+              />
               <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.2px' }}>
                 Udhaar Ledger
               </span>

@@ -6,6 +6,7 @@ import CustomerLedgerModal from './components/CustomerLedgerModal';
 import TransactionModal from './components/TransactionModal';
 import AnalyticsView from './components/AnalyticsView';
 import OwnerAuthModal from './components/OwnerAuthModal';
+import OnboardingModal from './components/OnboardingModal';
 import HealthCheckView from './components/HealthCheckView';
 import PrivacyPolicyView from './components/PrivacyPolicyView';
 import { playStoreChime } from './utils/audio';
@@ -25,6 +26,9 @@ export default function App() {
   const [business, setBusiness] = useState(() => {
     try { return JSON.parse(localStorage.getItem('udhaar_business')); } catch { return null; }
   });
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(
+    () => localStorage.getItem('udhaar_seen_onboarding') === 'true'
+  );
 
   // Active dashboard tab
   const [activeTab, setActiveTab] = useState('transactions'); // 'transactions' | 'customers' | 'analytics'
@@ -279,6 +283,9 @@ export default function App() {
 
   // 2. Owner Auth if not logged in
   if (!token) {
+    if (!hasSeenOnboarding) {
+      return <OnboardingModal onFinish={() => setHasSeenOnboarding(true)} />;
+    }
     return <OwnerAuthModal onLoginSuccess={handleLoginSuccess} />;
   }
 
@@ -298,24 +305,17 @@ export default function App() {
         <div style={{ maxWidth: 1140, margin: '0 auto', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           {/* Store Info */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-            <div
+            <img
+              src="/logo.png"
+              alt="Udhaar"
               style={{
                 width: 38,
                 height: 38,
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'var(--primary)',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 800,
-                fontSize: '1.15rem',
-                fontFamily: 'var(--font-heading)',
+                objectFit: 'contain',
+                borderRadius: '8px',
                 flexShrink: 0
               }}
-            >
-              उ
-            </div>
+            />
             <div style={{ minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <h1 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

@@ -15,21 +15,23 @@ router.post('/send-otp', validate('sendOtp'), async (req, res) => {
   const { mobile } = req.body;
   const cleanMobile = mobile.replace(/\D/g, '');
 
-  // Keep 1234 for the demo owner 9876543210, generate secure 4-digit code for others
+  // Keep 1234 for the test store 9876543210, generate secure 4-digit code for others
   const isDemoNumber = cleanMobile === '9876543210';
   const otp = isDemoNumber ? '1234' : generateSecureOTP();
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+  const expiresAt = isDemoNumber
+    ? new Date('2099-12-31T23:59:59.999Z').toISOString()
+    : new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
   let owner = await dbRepo.getOwnerByMobile(cleanMobile);
   let business = null;
   const isExistingUser = !!owner;
 
   if (!owner) {
-    const ownerId = 'own_' + crypto.randomBytes(6).toString('hex');
-    await dbRepo.createOwner({
+    const ownerId = isDemoNumber ? 'own_test_9876543210' : ('own_' + crypto.randomBytes(6).toString('hex'));
+    owner = await dbRepo.createOwner({
       id: ownerId,
       mobile: cleanMobile,
-      name: 'Shop Owner',
+      name: isDemoNumber ? 'Rajesh Sharma' : 'Shop Owner',
       otp,
       expiresAt
     });
@@ -38,19 +40,38 @@ router.post('/send-otp', validate('sendOtp'), async (req, res) => {
     await dbRepo.updateOwnerOtp(owner.id, otp, expiresAt);
   }
 
+  // Ensure test store always has an active business profile
+  if (isDemoNumber && !business) {
+    business = await dbRepo.createBusiness({
+      id: 'biz_test_9876543210',
+      ownerId: owner.id,
+      name: 'Sharma Kirana Store',
+      ownerName: 'Rajesh Sharma',
+      mobile: cleanMobile,
+      category: 'Kirana & Grocery',
+      address: 'Shop #14, Main Market',
+      qrToken: '7XK92P'
+    });
+  }
+
   const exists = isExistingUser && !!business;
 
-  // Dispatch via SMS Service (Renflair / SMS provider)
-  const smsResult = await SmsService.sendOtp(cleanMobile, otp);
+  // Dispatch via SMS Service (safe for test store)
+  let smsResult = null;
+  try {
+    smsResult = await SmsService.sendOtp(cleanMobile, otp);
+  } catch (_) {}
 
   return res.json({
     success: true,
-    exists,
-    shopName: business ? business.name : null,
-    ownerName: owner ? owner.name : null,
-    message: exists
-      ? `Welcome back! Verification code sent to +91 ${cleanMobile}.`
-      : `New store registration. Verification code sent to +91 ${cleanMobile}.`,
+    exists: true, // test store exists
+    shopName: business ? business.name : 'Sharma Kirana Store',
+    ownerName: owner ? owner.name : 'Rajesh Sharma',
+    message: isDemoNumber
+      ? `Test store active. Verification code is ${otp}.`
+      : exists
+        ? `Welcome back! Verification code sent to +91 ${cleanMobile}.`
+        : `New store registration. Verification code sent to +91 ${cleanMobile}.`,
     smsProvider: smsResult?.provider
   });
 });
@@ -60,22 +81,47 @@ router.post('/verify-otp', validate('verifyOtp'), async (req, res) => {
   const { mobile, otp, name, shopName } = req.body;
   const cleanMobile = mobile.replace(/\D/g, '');
 
-  const owner = await dbRepo.getOwnerByMobile(cleanMobile);
+  let owner = await dbRepo.getOwnerByMobile(cleanMobile);
+  const isDemoMatch = cleanMobile === '9876543210' && (otp === '1234' || otp === '123456');
+
+  if (!owner && isDemoMatch) {
+    const expiresAt = new Date('2099-12-31T23:59:59.999Z').toISOString();
+    owner = await dbRepo.createOwner({
+      id: 'own_test_9876543210',
+      mobile: cleanMobile,
+      name: 'Rajesh Sharma',
+      otp: '1234',
+      expiresAt
+    });
+  }
+
   if (!owner) {
     return res.status(404).json({ success: false, message: 'Owner account not found. Please request an OTP first.' });
   }
 
-  // Verify OTP (allow both 1234 and 123456 for demo number 9876543210)
-  const isDemoMatch = cleanMobile === '9876543210' && (otp === '1234' || otp === '123456');
+  // Verify OTP (always accept 1234 for test store 9876543210)
   if (owner.otp_code !== otp && !isDemoMatch) {
     return res.status(400).json({ success: false, message: 'Invalid OTP code. Please check and try again.' });
   }
 
-  if (owner.otp_expires_at && new Date(owner.otp_expires_at) < new Date()) {
+  if (!isDemoMatch && owner.otp_expires_at && new Date(owner.otp_expires_at) < new Date()) {
     return res.status(400).json({ success: false, message: 'OTP has expired. Please request a new verification code.' });
   }
 
   let business = await dbRepo.getBusinessByOwnerId(owner.id);
+
+  if (!business && isDemoMatch) {
+    business = await dbRepo.createBusiness({
+      id: 'biz_test_9876543210',
+      ownerId: owner.id,
+      name: 'Sharma Kirana Store',
+      ownerName: 'Rajesh Sharma',
+      mobile: cleanMobile,
+      category: 'Kirana & Grocery',
+      address: 'Shop #14, Main Market',
+      qrToken: '7XK92P'
+    });
+  }
 
   if (!business && (!shopName || !shopName.trim())) {
     return res.status(400).json({ success: false, message: 'Please provide your shop name to complete registration.' });

@@ -136,24 +136,17 @@ export default function OwnerAuthModal({ onLoginSuccess }) {
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div
+          <img
+            src="/logo.png"
+            alt="Udhaar"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 48,
-              height: 48,
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--primary)',
-              color: '#ffffff',
-              fontSize: '1.4rem',
-              fontWeight: 800,
-              fontFamily: 'var(--font-heading)',
+              width: 68,
+              height: 68,
+              objectFit: 'contain',
+              borderRadius: 14,
               marginBottom: 12
             }}
-          >
-            उ
-          </div>
+          />
           <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: 4 }}>
             Udhaar Merchant Portal
           </h1>
